@@ -1,0 +1,36 @@
+<networks>
+    <network>
+        <type>Email</type>
+        <name>Send Email</name>
+        <subject>email subject</subject>
+        <post>email message http://artguide.ru/promo_en.html</post>
+    </network>
+    <network>
+        <type>Facebook</type>
+        <name>Share on Facebook</name>
+        <token>226194827472208</token>
+        <link>http://artguide.ru/promo_en.html</link>
+        <picture>http://tmfassociates.com/blog/wp-content/uploads/2011/09/testing.jpg</picture>
+        <messageName>messageName</messageName>
+        <messageCaption>messageCaption</messageCaption>
+        <post>facebook message </post>
+        <messageDescription>messageDescription</messageDescription>
+    </network>
+    <network>
+        <type>Twitter</type>
+        <name>Share on Twitter</name>
+        <token>TWtSf7c2viJfLpBuOPXg</token>
+        <secret>HttEwBDVVLjDkgCdPz6l7m7Ef0nyWusVcx1Baw6CY</secret>
+        <link>http://artguide.ru/promo_en.html</link>
+    </network>
+    <network>
+        <type>Vkontakte</type>
+        <name>Share on VKontakte</name>
+        <link>http://artguide.ru/promo_en.html</link>
+    </network>
+    <network>
+        <type>Odnoklassniki</type>
+        <name>Share on Odnoklassniki</name>
+        <link>http://artguide.ru/promo_en.html</link>
+    </network>
+</networks>
