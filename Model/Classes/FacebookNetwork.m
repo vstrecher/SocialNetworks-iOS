@@ -21,8 +21,8 @@
 
     facebook = [[Facebook alloc] initWithAppId:self.token andDelegate:self];
 
-    EmployeeAppDelegate *appDelegate = (EmployeeAppDelegate *) [[UIApplication sharedApplication] delegate];
-    appDelegate.facebook = facebook;
+    id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
+    [appDelegate setValue:facebook forKey:@"facebook"];
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if ([defaults objectForKey:@"FBAccessTokenKey"] && [defaults objectForKey:@"FBExpirationDateKey"]) {
