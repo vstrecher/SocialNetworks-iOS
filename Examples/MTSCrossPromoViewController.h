@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "SFNetworkManager.h"
-#import "../../SocialNetworks/Auxiliary/SNCrossPromoXMLLoader.h"
-#import "../../SocialNetworks/Auxiliary/SNCrossPromoDataLoader.h"
+#import "SNCrossPromoXMLLoader.h"
+#import "SNCrossPromoDataLoader.h"
 
-@interface MTSCrossPromoViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, MTSCrossPromoDataLoaderDelegate> {
+@interface MTSCrossPromoViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, SNCrossPromoDataLoaderDelegate> {
 @private
     UIView *loadingView;
     UITableView *mainTableView;

@@ -38,7 +38,7 @@
     return self;
 }
 
-- (void)loadXMLWithDelegate:(id <MTSCrossPromoXMLLoaderDelegate>)aLoadDelegate {
+- (void)loadXMLWithDelegate:(id <SNCrossPromoXMLLoaderDelegate>)aLoadDelegate {
     self.loadDelegate = aLoadDelegate;
 
     NSURLRequest *urlRequest = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:XML_URL]];

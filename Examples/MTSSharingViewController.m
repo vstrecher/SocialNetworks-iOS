@@ -7,7 +7,7 @@
 //
 
 #import "MTSSharingViewController.h"
-#import "../../SocialNetworks/Model/SNSocialNetwork.h"
+#import "SNSocialNetwork.h"
 #import "SNSocialsXMLParser.h"
 #import "SNDefines.h"
 

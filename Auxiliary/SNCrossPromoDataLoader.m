@@ -43,7 +43,7 @@
 }
 
 
-- (void)startWithDelegate:(id <MTSCrossPromoDataLoaderDelegate>)aDataDelegate {
+- (void)startWithDelegate:(id <SNCrossPromoDataLoaderDelegate>)aDataDelegate {
     self.dataDelegate = aDataDelegate;
     [[SNCrossPromoXMLLoader instance] loadXMLWithDelegate:self];
 }

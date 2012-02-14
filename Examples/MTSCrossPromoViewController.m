@@ -7,11 +7,11 @@
 //
 
 #import "MTSCrossPromoViewController.h"
-#import "../../SocialNetworks/Auxiliary/SNCrossPromoXMLParser.h"
-#import "../../SocialNetworks/Model/SNApplicationObject.h"
-#import "../../SocialNetworks/Auxiliary/SNCrossPromoXMLLoader.h"
+#import "SNCrossPromoXMLParser.h"
+#import "SNApplicationObject.h"
+#import "SNCrossPromoXMLLoader.h"
 #import "SNFastMessage.h"
-#import "../../SocialNetworks/Auxiliary/SNCrossPromoDataLoader.h"
+#import "SNCrossPromoDataLoader.h"
 
 @implementation MTSCrossPromoViewController
 

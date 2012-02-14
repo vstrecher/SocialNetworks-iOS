@@ -13,7 +13,7 @@
 @class SNCrossPromoDataLoader;
 @class SNApplicationObject;
 
-@protocol MTSCrossPromoDataLoaderDelegate
+@protocol SNCrossPromoDataLoaderDelegate
 @required
 - (void)dataLoaderReady:(SNCrossPromoDataLoader *)dataLoader itemsCount:(NSUInteger)itemsCount;
 - (void)dataLoader:(SNCrossPromoDataLoader *)dataLoader gotLogoForItem:(NSUInteger)itemIndex;
@@ -21,14 +21,14 @@
 @end
 
 
-@interface SNCrossPromoDataLoader : NSObject <MTSCrossPromoXMLLoaderDelegate, SFNetworkManagerDelegate> {
-    id<MTSCrossPromoDataLoaderDelegate> dataDelegate;
+@interface SNCrossPromoDataLoader : NSObject <SNCrossPromoXMLLoaderDelegate, SFNetworkManagerDelegate> {
+    id<SNCrossPromoDataLoaderDelegate> dataDelegate;
     NSString *xmlContents;
     NSArray *applicationsArray;
     NSMutableDictionary *applicationsLogosDictionary;
 }
 
-@property(nonatomic, assign) id <MTSCrossPromoDataLoaderDelegate> dataDelegate;
+@property(nonatomic, assign) id <SNCrossPromoDataLoaderDelegate> dataDelegate;
 @property(nonatomic, retain) NSString *xmlContents;
 @property(nonatomic, retain) NSArray *applicationsArray;
 @property(nonatomic, retain) NSMutableDictionary *applicationsLogosDictionary;
@@ -36,7 +36,7 @@
 
 + (SNCrossPromoDataLoader *)instance;
 
-- (void)startWithDelegate:(id <MTSCrossPromoDataLoaderDelegate>)aDataDelegate;
+- (void)startWithDelegate:(id <SNCrossPromoDataLoaderDelegate>)aDataDelegate;
 - (SNApplicationObject *)itemWithIndex:(NSUInteger)itemIndex;
 
 
