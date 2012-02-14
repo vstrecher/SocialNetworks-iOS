@@ -19,8 +19,6 @@
     <network>
         <type>Twitter</type>
         <name>Share on Twitter</name>
-        <token>TWtSf7c2viJfLpBuOPXg</token>
-        <secret>HttEwBDVVLjDkgCdPz6l7m7Ef0nyWusVcx1Baw6CY</secret>
         <link>http://artguide.ru/promo_en.html</link>
     </network>
     <network>
