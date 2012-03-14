@@ -31,10 +31,12 @@
     return _instance;
 }
 
-- (NSArray *)getNetworks {
+- (NSArray *)getNetworksFromConfigFileName:(NSString *)aConfigXMLFileName {
     socialNetworks = [[NSMutableArray alloc] init];
 
-    NSString *configString = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:CONFIG_FILE_NAME ofType:CONFIG_FILE_EXTENSION] encoding:NSUTF8StringEncoding error:nil];
+    NSString *configXMLFileName = aConfigXMLFileName ? aConfigXMLFileName : [[NSBundle mainBundle] pathForResource:CONFIG_FILE_NAME ofType:CONFIG_FILE_EXTENSION];
+
+    NSString *configString = [NSString stringWithContentsOfFile:configXMLFileName encoding:NSUTF8StringEncoding error:nil];
     DDXMLDocument *doc = [[DDXMLDocument alloc] initWithXMLString:configString options:0 error:nil];
     NSString *xpathForNetwork = [NSString stringWithFormat:@"//%@", CONFIG_NETWORK];
     NSArray *items = [doc nodesForXPath:xpathForNetwork error:nil];
@@ -50,6 +52,7 @@
                 [socialNetworks addObject:socialNetwork];
             } else {
                 if (child.childCount <= 1) {
+                    Log(@"%@", child.stringValue);
                     [socialNetwork setValue:child.stringValue forKey:child.name];
                 }
             }
@@ -59,19 +62,10 @@
 
     [doc release];
     return [socialNetworks autorelease];
+}
 
-    /*
-    tbxml = [[TBXML tbxmlWithXMLFile:CONFIG_FILE_NAME error:nil] retain];
-
-    if (tbxml.rootXMLElement)
-        [self traverseElement:tbxml.rootXMLElement];
-
-    [tbxml release];
-
-    return [socialNetworks autorelease];
-    */
-
-
+- (NSArray *)getNetworks {
+    return [self getNetworksFromConfigFileName:nil];
 
 }
 
