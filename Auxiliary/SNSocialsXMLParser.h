@@ -16,6 +16,9 @@
 }
 
 + (SNSocialsXMLParser *)instance;
+
+- (NSArray *)getNetworksFromConfigFileName:(NSString *)aConfigXMLFileName;
+
 - (NSArray *)getNetworks;
 
 @end

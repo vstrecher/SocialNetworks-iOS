@@ -11,6 +11,8 @@
 
 
 @interface FacebookNetwork ()
+- (NSString *)sharingURL;
+
 - (void)sendToFacebook;
 
 @end
@@ -19,6 +21,7 @@
 
 - (void)postMessage {
 
+    /*
     facebook = [[Facebook alloc] initWithAppId:self.token andDelegate:self];
 
     id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
@@ -35,7 +38,15 @@
     } else {
         [self performSelector:@selector(sendToFacebook) withObject:nil afterDelay:0.1];
     }
+    */
 
+
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [self sharingURL], self.link]]];
+
+}
+
+- (NSString *)sharingURL {
+    return @"http://facebook.com/sharer.php?u=";
 }
 
 - (void)sendToFacebook
