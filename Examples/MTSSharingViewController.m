@@ -40,7 +40,8 @@
     socialNetworks = [[NSMutableArray alloc] init];
     socialNetwork = nil;
 
-    socialNetworks = [[[SNSocialsXMLParser instance] getNetworks] retain];
+    id applicationDelegate = [[UIApplication sharedApplication] delegate];
+    socialNetworks = [[[SNSocialsXMLParser instance] getNetworksFromConfigFileName:[applicationDelegate valueForKey:APP_DELEGATE_CONFIG_XML_PATH_PROPERTY_NAME]] retain];
 
     mainTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
     mainTableView.delegate = self;

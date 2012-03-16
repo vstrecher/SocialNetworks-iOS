@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define APP_DELEGATE_CONFIG_XML_PATH_PROPERTY_NAME @"pathForSocialSharingConfigXML"
+
 @class TBXML;
 @class SNSocialNetwork;
 
