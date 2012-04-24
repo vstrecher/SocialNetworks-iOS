@@ -35,7 +35,10 @@
 
     [twitterVC release];
     */
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [self sharingURL], self.link]]];
+
+    NSString *sUrl = [NSString stringWithFormat:@"%@%@&text=%@", [self sharingURL], self.link, [self.post stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    Log(@"tweeting %@", sUrl);
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:sUrl]];
 
 }
 
