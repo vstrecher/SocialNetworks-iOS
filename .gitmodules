@@ -1,0 +1,3 @@
+[submodule "SocialNetworksClasses/Frameworks/facebook-ios-sdk"]
+	path = SocialNetworksClasses/Frameworks/facebook-ios-sdk
+	url = git@github.com:vstrecher/facebook-ios-sdk.git
