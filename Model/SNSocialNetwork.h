@@ -21,6 +21,7 @@
     NSString *messageName;
     NSString *messageCaption;
     NSString *messageDescription;
+    NSNumber *_fullVersion;
 }
 
 @property(nonatomic, retain) NSString *name;
@@ -34,6 +35,7 @@
 @property(nonatomic, retain) NSString *messageName;
 @property(nonatomic, retain) NSString *messageCaption;
 @property(nonatomic, retain) NSString *messageDescription;
+@property(nonatomic, retain) NSNumber *fullVersion;
 
 
 - (void)postMessage;

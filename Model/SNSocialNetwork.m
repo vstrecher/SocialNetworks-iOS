@@ -20,6 +20,7 @@
 @synthesize messageName;
 @synthesize messageCaption;
 @synthesize messageDescription;
+@synthesize fullVersion = _fullVersion;
 
 - (void)dealloc {
     [name release];
@@ -33,6 +34,7 @@
     [messageName release];
     [messageCaption release];
     [messageDescription release];
+    [_fullVersion release];
     [super dealloc];
 
 }
