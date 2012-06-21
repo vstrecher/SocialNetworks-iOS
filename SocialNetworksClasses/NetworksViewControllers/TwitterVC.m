@@ -41,8 +41,6 @@
 {
     self = [super init];
 
-    MLOG(@"\nself.view.frame:%@", NSStringFromCGRect(self.view.frame));
-
     webView = [[UIWebView alloc] init];
     webView.frame = self.view.frame;
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
