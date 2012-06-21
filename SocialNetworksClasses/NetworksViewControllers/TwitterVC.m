@@ -280,7 +280,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
         return interfaceOrientation == UIInterfaceOrientationPortrait;
     else
-        return UIInterfaceOrientationIsPortrait(interfaceOrientation);
+        return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 
 }
 
