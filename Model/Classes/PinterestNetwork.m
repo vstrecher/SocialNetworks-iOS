@@ -9,16 +9,22 @@
 
 }
 
-- (NSString *)generatePinterestHTML {
-    NSString *description = self.messageDescription;
+- (NSString *)protectedFromString:(NSString *)string {
+    NSString *protectedString = (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,(__bridge CFStringRef)string, NULL, (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% \n",CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+    return protectedString;
+}
 
-// Generate urls for button and image
-//    NSString *sUrl = [NSString stringWithFormat:@"http://d30t6wl9ttrlhf.cloudfront.net/media/catalog/product/Heros/%@-1.jpg", sku];
-    NSLog(@"URL:%@", self.link);
-    NSString *protectedUrl = (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,(__bridge CFStringRef)self.link, NULL, (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% ",CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
-    NSLog(@"Protected URL:%@", protectedUrl);
+- (NSString *)generatePinterestURL {
+    NSString *description = [self protectedFromString:self.messageDescription];
+    NSString *protectedUrl = [self protectedFromString:self.link];
+    NSString *buttonUrl = [NSString stringWithFormat:@"http://pinterest.com/pin/create/button/?url=www.archergoods.com&media=%@&description=%@", protectedUrl, description];
+
+    return buttonUrl;
+}
+
+- (NSString *)generatePinterestHTML {
     NSString *imageUrl = [NSString stringWithFormat:@"\"%@\"", self.picture];
-    NSString *buttonUrl = [NSString stringWithFormat:@"\"http://pinterest.com/pin/create/button/?url=www.archergoods.com&media=%@&description=%@\"", protectedUrl, description];
+    NSString *buttonUrl = [NSString stringWithFormat:@"\"%@\"", [self generatePinterestURL]];
 
     NSMutableString *htmlString = [[[NSMutableString alloc] init] autorelease];
     [htmlString appendFormat:@"<html> <body background=\"https://assets.pinterest.com/images/paper.jpg\">"];
@@ -27,14 +33,13 @@
     [htmlString appendFormat:@"<p align=\"center\"><a href=%@ class=\"pin-it-button\" count-layout=\"horizontal\"><img border=\"0\" src=\"http://assets.pinterest.com/images/PinExt.png\" title=\"Pin It\" /></a></p>", buttonUrl];
     [htmlString appendFormat:@"<script type=\"text/javascript\" src=\"//assets.pinterest.com/js/pinit.js\"></script>"];
     [htmlString appendFormat:@"</body> </html>"];
+
     return htmlString;
 }
 
 - (void)postMessage {
-    NSString *htmlString = [self generatePinterestHTML];
-    NSLog(@"Generated HTML String:%@", htmlString);
     PinterestVC *pinterestVC = [[PinterestVC alloc] init];
-    pinterestVC.htmlString = htmlString;
+    [pinterestVC setOpenURL:[self generatePinterestURL]];
     [pinterestVC setModalPresentationStyle:UIModalPresentationPageSheet];
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentModalViewController:pinterestVC animated:YES];
 

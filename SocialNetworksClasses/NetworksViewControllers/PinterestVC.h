@@ -9,8 +9,11 @@
     UIButton *_dismissButton;
 
     NSString *_htmlString;
+    NSString *_openURL;
 }
 
 @property(nonatomic, copy) NSString *htmlString;
+@property(nonatomic, copy) NSString *openURL;
+
 
 @end

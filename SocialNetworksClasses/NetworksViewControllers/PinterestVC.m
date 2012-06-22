@@ -15,6 +15,7 @@
 @synthesize htmlString = _htmlString;
 @synthesize webView = _webView;
 @synthesize dismissButton = _dismissButton;
+@synthesize openURL = _openURL;
 
 
 - (id)init {
@@ -29,6 +30,7 @@
     [_htmlString release];
     [_webView release];
     [_dismissButton release];
+    [_openURL release];
     [super dealloc];
 }
 
@@ -53,17 +55,6 @@
 
 #pragma mark - Getters / Setters
 
-- (void)setHtmlString:(NSString *)aHtmlString {
-    if (_htmlString != aHtmlString) {
-        aHtmlString = [aHtmlString mutableCopy];
-        [_htmlString release];
-        _htmlString = aHtmlString;
-    }
-
-    INFO(@"%@", self.htmlString);
-}
-
-
 #pragma mark - Setting Up
 
 - (void)setUp {
@@ -76,7 +67,10 @@
     [self setWebView:[[[UIWebView alloc] init] autorelease]];
     if ( self.htmlString.length) {
         [self.webView loadHTMLString:self.htmlString baseURL:[NSURL URLWithString:@"http://pinterest.com"]];
+    } else if ( self.openURL.length ) {
+        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.openURL]]];
     }
+
 }
 
 - (void)createDismissButton {
@@ -103,7 +97,5 @@
     [self.webView setFrame:self.view.bounds];
     [self.dismissButton sizeToFit];
 }
-
-
 
 @end
