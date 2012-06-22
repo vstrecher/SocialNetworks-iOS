@@ -9,6 +9,7 @@
 #import "TDOAuth.h"
 #import <QuartzCore/QuartzCore.h>
 #import "SNDefines.h"
+#import "JSONKit.h"
 
 //#define CONSUMER_KEY @"nJlp0PfbLTvbOOalhpAgdQ"
 //#define CONSUMER_SECRET @"RUq4oatdz06POW11NxqzHk8AN1FGAVgU0L5TSStGk"
@@ -65,6 +66,16 @@
         [closeButton setTitle:@"✖" forState:UIControlStateNormal];
         [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:closeButton];
+    } else {
+        closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [closeButton setImage:[UIImage imageNamed:@"sn-close-dialog.png"] forState:UIControlStateNormal];
+        [closeButton sizeToFit];
+        [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+        [closeButton.layer setShadowColor:[[UIColor blackColor] CGColor]];
+        [closeButton.layer setShadowOffset:CGSizeMake(0, 1)];
+        [closeButton.layer setShadowOpacity:0.4];
+        [closeButton.layer setShadowRadius:2];
+        [self.view addSubview:closeButton];
     }
 
     return self;
@@ -81,11 +92,11 @@
     NSRange questionMarkRange = [string rangeOfString:@"?"];
     int questionMarkPos = (questionMarkRange.location == NSNotFound) ? 0:questionMarkRange.location+1;
 
-    NSArray* keyValuePairs = [[string substringFromIndex:questionMarkPos] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"=&"]];
+    NSArray* keyValuePairs = [[string substringFromIndex:(NSUInteger) questionMarkPos] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"=&"]];
     for (int i=0; i<[keyValuePairs count]; i+=2) {
-        NSString *s = [keyValuePairs objectAtIndex:i];
+        NSString *s = [keyValuePairs objectAtIndex:(NSUInteger) i];
         if ([s isEqualToString:key])
-            return [keyValuePairs objectAtIndex:i+1];
+            return [keyValuePairs objectAtIndex:(NSUInteger) (i+1)];
     }
     return nil;
 }
@@ -141,10 +152,12 @@
     NSString *reply = [[NSString alloc] initWithData:replyData encoding:NSUTF8StringEncoding];
     Log(@"response = %@, reply: %@", response, reply);
 
+    NSDictionary *replyDictionary = [reply objectFromJSONString]; //TODO: add JSONKit as submodule to SocialNetworks
+
     if ([reply rangeOfString:@"error"].location == NSNotFound) {
         [delegate tweetSent];
     } else {
-        [delegate tweetFailedWithError:[NSError errorWithDomain:@"postTokenTicket did not succeed" code:0 userInfo:nil]];
+        [delegate tweetFailedWithError:[NSError errorWithDomain:[replyDictionary objectForKey:@"error"] code:0 userInfo:nil]];
     }
 
     [reply release];
