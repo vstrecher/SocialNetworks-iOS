@@ -270,9 +270,8 @@
 {
     if (!activityIndicatorView) {
         activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle: UIActivityIndicatorViewStyleGray];
-        activityIndicatorView.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2);
-        activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin
-                | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        activityIndicatorView.center = CGPointMake(self.view.frame.size.width - activityIndicatorView.frame.size.width , activityIndicatorView.frame.size.height);
+        activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin ;
         [activityIndicatorView startAnimating];
         [self.view addSubview: activityIndicatorView];
     }

@@ -4,9 +4,10 @@
 #import <Foundation/Foundation.h>
 
 
-@interface PinterestVC : UIViewController {
+@interface PinterestVC : UIViewController <UIWebViewDelegate> {
     UIWebView *_webView;
     UIButton *_dismissButton;
+    UIActivityIndicatorView *_activityIndicatorView;
 
     NSString *_htmlString;
     NSString *_openURL;
