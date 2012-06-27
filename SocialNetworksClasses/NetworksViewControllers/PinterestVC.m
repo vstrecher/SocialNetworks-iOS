@@ -30,6 +30,7 @@
 }
 
 - (void)dealloc {
+    [self.webView setDelegate:nil];
     [_htmlString release];
     [_webView release];
     [_dismissButton release];

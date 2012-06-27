@@ -300,6 +300,7 @@
 
 - (void) dealloc
 {
+    [webView setDelegate:nil];
     [messageToSend release];
     [webView release];
     [consumerKey release];
