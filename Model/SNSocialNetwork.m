@@ -48,12 +48,12 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"{%@,%@,%@} %@", self.name, self.post, self.token, [super description]];
+    return [NSString stringWithFormat:@"{%@,%@,%@} %@", self.type, self.token, self.post, [super description]];
 
 }
 
 - (void)postMessage {
-    NSLog(@"Posting to %@: %@", self.name, self.post);
+    NSLog(@"Posting to %@: %@", self.type, self.post);
 
 }
 
@@ -62,8 +62,13 @@
 }
 
 - (void)login {
-    NSLog(@"Logging to %@", self.name);
+    NSLog(@"Logging to %@", self.type);
 }
+
+- (void)logout {
+    NSLog(@"Logging out %@", self.type);
+}
+
 
 - (void)loginDidSucceeded {
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLoginSuccessful object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
@@ -71,6 +76,14 @@
 
 - (void)loginDidFail {
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLoginError object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
+}
+
+- (void)logoutDidSucceeded {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLogoutSuccessful object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
+}
+
+- (void)logoutDidFail {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLogoutError object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
 }
 
 #pragma mark - Instance Methods

@@ -52,8 +52,11 @@
 - (void)postMessage;
 - (BOOL)isLogged;
 - (void)login;
+- (void)logout;
 - (void)loginDidSucceeded;
 - (void)loginDidFail;
+- (void)logoutDidSucceeded;
+- (void)logoutDidFail;
 
 
 @end

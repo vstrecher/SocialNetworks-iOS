@@ -37,6 +37,8 @@
 #define NOTIFICATION_VIEW_CONTROLLER @"view-controller"
 #define kNotificationNetworkLoginSuccessful @"NetworkLoginSuccessful"
 #define kNotificationNetworkLoginError @"NetworkLoginError"
+#define kNotificationNetworkLogoutSuccessful @"NetworkLogoutSuccessful"
+#define kNotificationNetworkLogoutError @"NetworkLogoutError"
 
 // Cross promo XML URL
 #define XML_URL @"http://www.mts.ru/xmlapi/PlatformApplicationExport.ashx?platform=Apple%20iOS"
