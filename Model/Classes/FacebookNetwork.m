@@ -56,6 +56,13 @@
     }
 }
 
+- (void)logout {
+    if ( self.fullVersion ) {
+        [self getFacebookInstance];
+        [facebook logout];
+    }
+}
+
 - (void)getFacebookInstance {
     id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
     facebook = [appDelegate valueForKey:@"facebook"];
@@ -145,6 +152,7 @@
 - (void)fbDidLogout
 {
     Log(@"fbDidLogout");
+    [super logoutDidSucceeded];
 }
 
 - (void)request:(FBRequest *)request didLoad:(id)result

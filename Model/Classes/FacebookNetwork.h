@@ -15,9 +15,8 @@
 }
 
 - (void)postMessage;
-
 - (BOOL)isLogged;
-
 - (void)login;
+- (void)logout;
 
 @end
