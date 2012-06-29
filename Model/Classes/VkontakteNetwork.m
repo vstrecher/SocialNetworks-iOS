@@ -47,7 +47,43 @@
     return @"http://vk.com/share.php?url=";
 }
 
+- (BOOL)isLogged {
+    return [self isAccessTokenValid];
+}
+
+- (void)login {
+    [self setIsLoginAction:YES];
+    [self showAuthViewController];
+}
+
+- (void)logout {
+    [self doLogout];
+}
+
+
 #pragma mark - Private
+
+- (void)doLogout {
+    NSString *logout = @"http://api.vk.com/oauth/logout";
+
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:logout]
+            cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+        timeoutInterval:60.0];
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    if(responseData){
+        NSDictionary *dict = [responseData objectFromJSONData];
+        NSLog(@"Logout: %@", dict);
+
+        [self setIsAuth:NO];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kVKDefaultsAccessToken];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kVKDefaultsExpirationDate];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kVKDefaultsUserId];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+
+        [self sendSuccessWithMessage:@"Log out succeeded"];
+        [super logoutDidSucceeded];
+    }
+}
 
 - (void)showAuthViewController {
     VkontakteVC *vkontakteVC = [[VkontakteVC alloc] init];
@@ -285,8 +321,21 @@
 - (void)vk:(VkontakteVC *)viewController completedAuthenticationWithStatus:(BOOL)isSuccessful {
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissModalViewControllerAnimated:YES];
     [self setIsAuth:isSuccessful];
+
     if ( isSuccessful ) {
+
+        if ( self.isLoginAction ) {
+            [self setIsLoginAction:NO];
+            [super loginDidSucceeded];
+            return;
+        }
+
         [self postMessage];
+
+    } else {
+
+        [super loginDidFail];
+
     }
 }
 

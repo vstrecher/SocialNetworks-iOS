@@ -9,6 +9,7 @@
 #import "VkontakteVC.h"
 #import "SNDefines.h"
 #import "VkontakteVCDelegate.h"
+#import "SNFastMessage.h"
 
 #define CALLBACK_VK_URL @"http://api.vk.com/blank.html"
 #define CALLBACK_VKONTAKTE_URL @"http://api.vkontakte.ru/blank.html"
@@ -130,6 +131,8 @@
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     INFO(@"FAIL: %@ %@", mainWebView.request.URL.absoluteString, error.localizedDescription);
+    [self.activityIndicator stopAnimating];
+    [SNFastMessage showFastMessageWithTitle:@"Error" message:[error localizedDescription]];
 }
 
 #pragma mark - Private Methods

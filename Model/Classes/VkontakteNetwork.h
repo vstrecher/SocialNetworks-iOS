@@ -13,5 +13,9 @@
     BOOL _isCaptcha, _isAuth;
 
 }
+- (BOOL)isLogged;
+- (void)login;
+- (void)logout;
+- (void)postMessage;
 
 @end
