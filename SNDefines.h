@@ -9,6 +9,7 @@
 #define Log(fmt, ...) NSLog((@"%s %d: " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
 
 // Socials Config XML Defines
+#define APP_DELEGATE_CONFIG_XML_PATH_PROPERTY_NAME @"pathForSocialSharingConfigXML"
 #define CONFIG_FILE_NAME @"SocialsConfig"
 #define CONFIG_FILE_EXTENSION @"xml"
 #define CONFIG_EMAIL_TYPE @"Email"
@@ -34,11 +35,17 @@
 #define SHOW_MODAL_VIEW_CONTROLLER_NOTIFICATION @"ShowModalViewControllerNotification"
 #define HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION @"HideModalViewControllerNotification"
 #define NOTIFICATION_VIEW_CONTROLLER @"view-controller"
+#define kNotificationNetworkLoginSuccessful @"NetworkLoginSuccessful"
+#define kNotificationNetworkLoginError @"NetworkLoginError"
 
 // Cross promo XML URL
 #define XML_URL @"http://www.mts.ru/xmlapi/PlatformApplicationExport.ashx?platform=Apple%20iOS"
 
 // VK
+#define kVKDefaultsAccessToken @"VKAccessTokenKey"
+#define kVKDefaultsExpirationDate @"VKExpirationDateKey"
+#define kVKDefaultsUserId @"VKUserId"
+
 #define kVKAccessTokenKey @"access_token"
 #define kVKUserIdKey @"user_id"
 #define kVKExpiresInKey @"expires_in"
@@ -57,3 +64,7 @@
 #define kPhotosGetWallUploadServerURL(user_id, access_token) [NSString stringWithFormat:@"https://api.vk.com/method/photos.getWallUploadServer?owner_id=%@&access_token=%@", user_id, access_token]
 #define kPhotosSaveWallPhotoURL(access_token, server, photo, hash) [NSString stringWithFormat:@"https://api.vk.com/method/photos.saveWallPhoto?access_token=%@&server=%@&photo=%@&hash=%@", access_token,server,photo,hash]
 #define kWallPostURL(user_id, access_token, text, attachment) [NSString stringWithFormat:@"https://api.vk.com/method/wall.post?owner_id=%@&access_token=%@&message=%@&attachment=%@", user_id, access_token, text, attachment]
+
+// FB
+#define kFBDefaultsAccessToken @"FBAccessTokenKey"
+#define kFBDefaultsExpirationDate @"FBExpirationDateKey"

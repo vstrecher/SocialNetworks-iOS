@@ -7,6 +7,10 @@
 //
 
 #import "SNSocialNetwork.h"
+#import "FacebookNetwork.h"
+#import "VkontakteNetwork.h"
+#import "SNSocialsXMLParser.h"
+#import "SNDefines.h"
 
 @implementation SNSocialNetwork
 @synthesize name;
@@ -21,6 +25,9 @@
 @synthesize messageCaption;
 @synthesize messageDescription;
 @synthesize fullVersion = _fullVersion;
+@synthesize isLoginAction = _isLoginAction;
+@synthesize type = _type;
+
 
 - (void)dealloc {
     [name release];
@@ -35,6 +42,7 @@
     [messageCaption release];
     [messageDescription release];
     [_fullVersion release];
+    [_type release];
     [super dealloc];
 
 }
@@ -47,6 +55,34 @@
 - (void)postMessage {
     NSLog(@"Posting to %@: %@", self.name, self.post);
 
+}
+
+- (BOOL)isLogged {
+    return NO;
+}
+
+- (void)login {
+    NSLog(@"Logging to %@", self.name);
+}
+
+- (void)loginDidSucceeded {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLoginSuccessful object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
+}
+
+- (void)loginDidFail {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLoginError object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
+}
+
+#pragma mark - Instance Methods
+
++ (FacebookNetwork *)facebookNetwork {
+    FacebookNetwork *facebookNetwork = (FacebookNetwork *) [[SNSocialsXMLParser instance] getNetworkWithType:CONFIG_FACEBOOK_TYPE];
+    return facebookNetwork;
+}
+
++ (VkontakteNetwork *)vkNetwork {
+    VkontakteNetwork *vkontakteNetwork = (VkontakteNetwork *) [[SNSocialsXMLParser instance] getNetworkWithType:CONFIG_VK_TYPE];
+    return vkontakteNetwork;
 }
 
 @end

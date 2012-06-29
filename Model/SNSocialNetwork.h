@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+@class FacebookNetwork;
+@class VkontakteNetwork;
+
 @interface SNSocialNetwork : NSObject {
 @protected
     NSString *name;
@@ -21,7 +24,10 @@
     NSString *messageName;
     NSString *messageCaption;
     NSString *messageDescription;
+    NSString *_type;
     NSNumber *_fullVersion;
+
+    BOOL _isLoginAction;
 }
 
 @property(nonatomic, retain) NSString *name;
@@ -36,8 +42,18 @@
 @property(nonatomic, retain) NSString *messageCaption;
 @property(nonatomic, retain) NSString *messageDescription;
 @property(nonatomic, retain) NSNumber *fullVersion;
+@property(nonatomic, assign) BOOL isLoginAction;
+@property(nonatomic, copy) NSString *type;
 
+
++ (FacebookNetwork *)facebookNetwork;
++ (VkontakteNetwork *)vkNetwork;
 
 - (void)postMessage;
+- (BOOL)isLogged;
+- (void)login;
+- (void)loginDidSucceeded;
+- (void)loginDidFail;
+
 
 @end
