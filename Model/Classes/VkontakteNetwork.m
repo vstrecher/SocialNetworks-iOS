@@ -59,14 +59,14 @@
 }
 
 - (BOOL)isAccessTokenValid {
-    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:kVKAccessTokenKey];
+    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsAccessToken];
 
     if ( ! accessToken.length ) {
         INFO(@"Access token is null");
         return NO;
     }
 
-    NSDate *expiryDate = [[NSUserDefaults standardUserDefaults] objectForKey:kVKExpiresInKey];
+    NSDate *expiryDate = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsExpirationDate];
     NSTimeInterval delta = [expiryDate timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970];
 
     if ( delta <= 0 ) {
@@ -83,8 +83,8 @@
 - (void)sendText:(NSString *)text {
     if ( ! self.isAuth ) return;
 
-    NSString *user_id = [[NSUserDefaults standardUserDefaults] objectForKey:kVKUserIdKey];
-    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:kVKAccessTokenKey];
+    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsAccessToken];
+    NSString *user_id = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsUserId];
 
     NSDictionary *result = [self sendRequest:kWallPostURL(user_id, accessToken, [self URLEncodedString:text], nil) withCaptcha:NO];
 
@@ -99,8 +99,8 @@
 - (void)sendImageData:(NSData *)imageData text:(NSString *)text {
     if( ! self.isAuth ) return;
 
-    NSString *user_id = [[NSUserDefaults standardUserDefaults] objectForKey:kVKUserIdKey];
-    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:kVKAccessTokenKey];
+    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsAccessToken];
+    NSString *user_id = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsUserId];
 
     NSDictionary *uploadServer = [self sendRequest:kPhotosGetWallUploadServerURL(user_id, accessToken) withCaptcha:NO];
     NSString *upload_url = [[uploadServer objectForKey:kVKResponseKey] objectForKey:kVKUploadURLKey];

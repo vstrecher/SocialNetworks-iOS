@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreGraphics/CoreGraphics.h>
 #import "VkontakteVC.h"
 #import "SNDefines.h"
 #import "VkontakteVCDelegate.h"
@@ -105,26 +103,6 @@
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     INFO(@"OK: %@", request.URL.absoluteString);
-  /*  NSString* url = [[request URL] absoluteString];
-    Log(@"webView is loading %@", url);
-    if ([url rangeOfString:CALLBACK_VK_URL].location == 0 || [url rangeOfString:CALLBACK_VKONTAKTE_URL].location == 0) {
-        if (!self.access_token) {
-            self.access_token = [self getParameterFromString:url withKey:@"access_token"];
-            Log(@"Got access token: '%@'", self.access_token);
-            NSString *string = [NSString stringWithFormat:@"https://api.vkontakte.ru/method/wall.post?message=%@&access_token=%@", [self.messageToPost stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], self.access_token];
-//            [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:string]]];
-            Log(@"%@", string);
-
-            NSURLRequest *urlRequest = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:string]];
-            NSURLConnection *urlConnection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];
-            [urlRequest release];
-
-            [urlConnection start];
-
-            [urlConnection release];
-        }
-
-    }*/
     return YES;
 
 }
@@ -161,14 +139,14 @@
     NSString *accessToken = [self getParameterFromString:responseURL withKey:kVKAccessTokenKey];
     INFO(@"Got access token: %@", accessToken);
     if ( accessToken.length ) {
-        [[NSUserDefaults standardUserDefaults] setObject:accessToken forKey:kVKAccessTokenKey];
+        [[NSUserDefaults standardUserDefaults] setObject:accessToken forKey:kVKDefaultsAccessToken];
 
         // getting expires in
         NSString *expiresInString = [self getParameterFromString:responseURL withKey:kVKExpiresInKey];
         if ( expiresInString.length ) {
             NSDate *expiryDate = [NSDate dateWithTimeIntervalSinceNow:expiresInString.integerValue];
             INFO(@"Got expiry date: %@", expiryDate);
-            [[NSUserDefaults standardUserDefaults] setObject:expiryDate forKey:kVKExpiresInKey];
+            [[NSUserDefaults standardUserDefaults] setObject:expiryDate forKey:kVKDefaultsExpirationDate];
         }
     }
 
@@ -176,7 +154,7 @@
     NSString *userId = [self getParameterFromString:responseURL withKey:kVKUserIdKey];
     INFO(@"Got user id: %@", userId);
     if ( userId.length ) {
-        [[NSUserDefaults standardUserDefaults] setObject:userId forKey:kVKUserIdKey];
+        [[NSUserDefaults standardUserDefaults] setObject:userId forKey:kVKDefaultsUserId];
     }
 }
 
