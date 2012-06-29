@@ -11,14 +11,15 @@
 @class SNSocialNetwork;
 
 @interface SNSocialsXMLParser : NSObject {
-    NSMutableArray *socialNetworks;
+    NSArray *_socialNetworks;
     SNSocialNetwork *socialNetwork;
 }
 
 + (SNSocialsXMLParser *)instance;
-
 - (NSArray *)getNetworksFromConfigFileName:(NSString *)aConfigXMLFileName;
-
 - (NSArray *)getNetworks;
+
+- (SNSocialNetwork *)getNetworkWithType:(NSString *)type;
+
 
 @end

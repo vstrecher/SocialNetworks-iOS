@@ -12,12 +12,14 @@
 #import "SNDefines.h"
 
 @interface SNSocialsXMLParser ()
+@property(nonatomic, retain) NSArray *socialNetworks;
+
 - (SNSocialNetwork *)createNetworkWithType:(NSString *)networkType;
-
-
 @end
 
 @implementation SNSocialsXMLParser
+@synthesize socialNetworks = _socialNetworks;
+
 
 + (SNSocialsXMLParser *)instance {
     static SNSocialsXMLParser *_instance = nil;
@@ -32,9 +34,10 @@
 }
 
 - (NSArray *)getNetworksFromConfigFileName:(NSString *)aConfigXMLFileName {
-    socialNetworks = [[NSMutableArray alloc] init];
+    NSMutableArray *socialNetworks = [[NSMutableArray alloc] init];
 
-    NSString *configXMLFileName = aConfigXMLFileName ? aConfigXMLFileName : [[NSBundle mainBundle] pathForResource:CONFIG_FILE_NAME ofType:CONFIG_FILE_EXTENSION];
+    id applicationDelegate = [[UIApplication sharedApplication] delegate];
+    NSString *configXMLFileName = aConfigXMLFileName ? aConfigXMLFileName : [applicationDelegate valueForKey:APP_DELEGATE_CONFIG_XML_PATH_PROPERTY_NAME];
 
     NSString *configString = [NSString stringWithContentsOfFile:configXMLFileName encoding:NSUTF8StringEncoding error:nil];
     DDXMLDocument *doc = [[DDXMLDocument alloc] initWithXMLString:configString options:0 error:nil];
@@ -49,10 +52,10 @@
                 NSString *networkType = child.stringValue;
                 socialNetwork = [[self createNetworkWithType:networkType] retain];
                 socialNetwork.logo = [UIImage imageNamed:networkType];
+                [socialNetwork setType:child.stringValue];
                 [socialNetworks addObject:socialNetwork];
             } else {
                 if (child.childCount <= 1) {
-                    Log(@"%@", child.stringValue);
                     [socialNetwork setValue:child.stringValue forKey:child.name];
                 }
             }
@@ -61,39 +64,32 @@
     }
 
     [doc release];
-    return [socialNetworks autorelease];
+
+    NSArray *resultArray = [NSArray arrayWithArray:socialNetworks];
+    [socialNetworks release];
+
+    return resultArray;
 }
 
 - (NSArray *)getNetworks {
-    return [self getNetworksFromConfigFileName:nil];
+    if ( ! self.socialNetworks ) {
+        [self setSocialNetworks:[self getNetworksFromConfigFileName:nil]];
+    }
 
+    return self.socialNetworks;
 }
 
-/*
-- (void) traverseElement:(TBXMLElement *)element {
-    do {
-        NSString *elementName = [TBXML elementName:element];
-        NSString *textForElement = [TBXML textForElement:element];
+- (SNSocialNetwork *)getNetworkWithType:(NSString *)type {
+    NSArray *networks = [[SNSocialsXMLParser instance] getNetworks];
 
-        if ([elementName isEqualToString:CONFIG_TYPE]) {
-            [socialNetwork release];
-            NSString *networkType = textForElement;
-            socialNetwork = [[self createNetworkWithType:networkType] retain];
-            socialNetwork.logo = [UIImage imageNamed:networkType];
-            [socialNetworks addObject:socialNetwork];
-
-        } else if (![elementName isEqualToString:CONFIG_NETWORK] && ![elementName isEqualToString:CONFIG_NETWORKS]){
-            [socialNetwork setValue:textForElement forKey:elementName];
-
+    for (SNSocialNetwork *network in networks) {
+        if ([network.type isEqualToString:type] ) {
+            return network;
         }
+    }
 
-        if (element->firstChild)
-            [self traverseElement:element->firstChild];
-
-    } while ((element = element->nextSibling));
-
+    return nil;
 }
- */
 
 - (SNSocialNetwork *)createNetworkWithType:(NSString *)networkType {
     SNSocialNetwork *resultSocialNetwork = nil;
@@ -102,6 +98,11 @@
     [className release];
     return [resultSocialNetwork autorelease];
 
+}
+
+- (void)dealloc {
+    [_socialNetworks release];
+    [super dealloc];
 }
 
 @end
