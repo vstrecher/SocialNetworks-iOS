@@ -37,3 +37,23 @@
 
 // Cross promo XML URL
 #define XML_URL @"http://www.mts.ru/xmlapi/PlatformApplicationExport.ashx?platform=Apple%20iOS"
+
+// VK
+#define kVKAccessTokenKey @"access_token"
+#define kVKUserIdKey @"user_id"
+#define kVKExpiresInKey @"expires_in"
+#define kVKErrorKey @"error"
+#define kVKResponseKey @"response"
+#define kVKUploadURLKey @"upload_url"
+#define kVKHashKey @"hash"
+#define kVKPhotoKey @"photo"
+#define kVKServerKey @"server"
+#define kVKIdKey @"id"
+#define kVKErrorMsgKey @"error_msg"
+#define kVKCaptchaSidKey @"captcha_sid"
+#define kVKCaptchaImgKey @"captcha_img"
+#define kVKRequestKey @"request"
+
+#define kPhotosGetWallUploadServerURL(user_id, access_token) [NSString stringWithFormat:@"https://api.vk.com/method/photos.getWallUploadServer?owner_id=%@&access_token=%@", user_id, access_token]
+#define kPhotosSaveWallPhotoURL(access_token, server, photo, hash) [NSString stringWithFormat:@"https://api.vk.com/method/photos.saveWallPhoto?access_token=%@&server=%@&photo=%@&hash=%@", access_token,server,photo,hash]
+#define kWallPostURL(user_id, access_token, text, attachment) [NSString stringWithFormat:@"https://api.vk.com/method/wall.post?owner_id=%@&access_token=%@&message=%@&attachment=%@", user_id, access_token, text, attachment]

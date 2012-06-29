@@ -7,7 +7,11 @@
 //
 
 #import "../SNSocialNetwork.h"
+#import "VkontakteVCDelegate.h"
 
-@interface VkontakteNetwork : SNSocialNetwork
+@interface VkontakteNetwork : SNSocialNetwork <VkontakteVCDelegate> {
+    BOOL _isCaptcha, _isAuth;
+
+}
 
 @end
