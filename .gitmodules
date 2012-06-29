@@ -1,3 +1,9 @@
 [submodule "SocialNetworksClasses/Frameworks/facebook-ios-sdk"]
 	path = SocialNetworksClasses/Frameworks/facebook-ios-sdk
 	url = git@github.com:vstrecher/facebook-ios-sdk.git
+[submodule "SocialNetworksClasses/Frameworks/JSONKit"]
+	path = SocialNetworksClasses/Frameworks/JSONKit
+	url = git://github.com/vstrecher/JSONKit.git
+[submodule "SocialNetworksClasses/Frameworks/KissXML"]
+	path = SocialNetworksClasses/Frameworks/KissXML
+	url = git://github.com/vstrecher/KissXML.git
