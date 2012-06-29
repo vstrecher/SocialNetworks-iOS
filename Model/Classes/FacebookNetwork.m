@@ -12,9 +12,7 @@
 
 @interface FacebookNetwork ()
 - (NSString *)sharingURL;
-
 - (void)sendToFacebook;
-
 @end
 
 @implementation FacebookNetwork
@@ -22,16 +20,7 @@
 - (void)postMessage {
 
     if ( self.fullVersion ) {
-        facebook = [[Facebook alloc] initWithAppId:self.token andDelegate:self];
-
-        id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
-        [appDelegate setValue:facebook forKey:@"facebook"];
-
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        if ([defaults objectForKey:@"FBAccessTokenKey"] && [defaults objectForKey:@"FBExpirationDateKey"]) {
-            facebook.accessToken = [defaults objectForKey:@"FBAccessTokenKey"];
-            facebook.expirationDate = [defaults objectForKey:@"FBExpirationDateKey"];
-        }
+        [self getFacebookInstance];
 
         if (![facebook isSessionValid]) {
             [facebook authorize:[NSArray arrayWithObjects:@"publish_stream", nil]];
@@ -42,6 +31,44 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [self sharingURL], self.link]]];
     }
 
+}
+
+- (BOOL)isLogged {
+    if ( self.fullVersion ) {
+        [self getFacebookInstance];
+        return facebook.isSessionValid;
+    }
+
+    return NO;
+}
+
+
+- (void)login {
+    if ( self.fullVersion ) {
+        [self getFacebookInstance];
+
+        if ( facebook.isSessionValid ) {
+            [super loginDidSucceeded];
+        } else {
+            [self setIsLoginAction:YES];
+            [facebook authorize:[NSArray arrayWithObject:@"publish_stream"]];
+        }
+    }
+}
+
+- (void)getFacebookInstance {
+    id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
+    facebook = [appDelegate valueForKey:@"facebook"];
+    if ( ! facebook ) {
+        facebook = [[Facebook alloc] initWithAppId:self.token andDelegate:self];
+        [appDelegate setValue:facebook forKey:@"facebook"];
+    }
+
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults objectForKey:kFBDefaultsAccessToken] && [defaults objectForKey:kFBDefaultsExpirationDate]) {
+        facebook.accessToken = [defaults objectForKey:kFBDefaultsAccessToken];
+        facebook.expirationDate = [defaults objectForKey:kFBDefaultsExpirationDate];
+    }
 }
 
 - (NSString *)sharingURL {
@@ -81,9 +108,15 @@
     Log(@"fbDidLogin");
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[facebook accessToken] forKey:@"FBAccessTokenKey"];
-    [defaults setObject:[facebook expirationDate] forKey:@"FBExpirationDateKey"];
+    [defaults setObject:[facebook accessToken] forKey:kFBDefaultsAccessToken];
+    [defaults setObject:[facebook expirationDate] forKey:kFBDefaultsExpirationDate];
     [defaults synchronize];
+
+    if ( self.isLoginAction) {
+        [self setIsLoginAction:NO];
+        [super loginDidSucceeded];
+        return;
+    }
 
     [self sendToFacebook];
 }
@@ -97,6 +130,8 @@
                                               cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
     [alertView release];
+
+    [super loginDidFail];
 }
 
 - (void)fbDidExtendToken:(NSString *)accessToken expiresAt:(NSDate *)expiresAt {

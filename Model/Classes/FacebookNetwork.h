@@ -14,4 +14,10 @@
     Facebook *facebook;
 }
 
+- (void)postMessage;
+
+- (BOOL)isLogged;
+
+- (void)login;
+
 @end
