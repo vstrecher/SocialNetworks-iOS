@@ -7,3 +7,6 @@
 [submodule "SocialNetworksClasses/Frameworks/KissXML"]
 	path = SocialNetworksClasses/Frameworks/KissXML
 	url = git://github.com/vstrecher/KissXML.git
+[submodule "SocialNetworksClasses/Frameworks/TBMacros"]
+	path = SocialNetworksClasses/Frameworks/TBMacros
+	url = git@github.com:vstrecher/TBMacros.git
