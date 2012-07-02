@@ -10,6 +10,7 @@
 #import "VkontakteVC.h"
 #import "SNDefines.h"
 #import "JSONKit.h"
+#import "Macros.h"
 
 @interface VkontakteNetwork ()
 @property(nonatomic, assign) BOOL isCaptcha;

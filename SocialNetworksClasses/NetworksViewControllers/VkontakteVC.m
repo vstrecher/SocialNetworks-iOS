@@ -10,6 +10,7 @@
 #import "SNDefines.h"
 #import "VkontakteVCDelegate.h"
 #import "SNFastMessage.h"
+#import "Macros.h"
 
 #define CALLBACK_VK_URL @"http://api.vk.com/blank.html"
 #define CALLBACK_VKONTAKTE_URL @"http://api.vkontakte.ru/blank.html"
