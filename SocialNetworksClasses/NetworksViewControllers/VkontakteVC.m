@@ -60,6 +60,17 @@
     return self;
 }
 
+- (void)dealloc {
+    [mainWebView setDelegate:nil];
+    [mainWebView release], mainWebView = nil;
+    [access_token release], access_token = nil;
+    [messageToPost release], messageToPost = nil;
+    [token release], token = nil;
+    [self setActivityIndicator:nil];
+    [super dealloc];
+}
+
+
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -88,10 +99,16 @@
 
     [mainWebView stopLoading];
 
-    NSString *string = [NSString stringWithFormat:@"http://oauth.vk.com/authorize?client_id=%@&scope=wall,photos&redirect_uri=http://oauth.vk.com/blank.html&display=touch&response_type=token", self.token];
+    NSString *string = [NSString stringWithFormat:@"http://oauth.vk.com/authorize?client_id=%@&scope=wall,photos,offline&redirect_uri=http://oauth.vk.com/blank.html&display=touch&response_type=token", self.token];
     NSString *webString = [string stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [mainWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:webString]]];
 
+}
+
+- (void)viewDidUnload {
+    [mainWebView setDelegate:nil];
+
+    [super viewDidUnload];
 }
 
 
@@ -116,6 +133,8 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     INFO(@"OK: %@", webView.request.URL.absoluteString);
+    [self.activityIndicator stopAnimating];
+
     NSString *const urlString = webView.request.URL.absoluteString;
 
     if ( [urlString rangeOfString:kVKAccessTokenKey].location != NSNotFound ) {
@@ -127,7 +146,6 @@
         [self.delegate vk:self completedAuthenticationWithStatus:NO];
         //TODO: show alert view
     }
-    [self.activityIndicator stopAnimating];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
@@ -148,9 +166,14 @@
         // getting expires in
         NSString *expiresInString = [self getParameterFromString:responseURL withKey:kVKExpiresInKey];
         if ( expiresInString.length ) {
-            NSDate *expiryDate = [NSDate dateWithTimeIntervalSinceNow:expiresInString.integerValue];
-            INFO(@"Got expiry date: %@", expiryDate);
-            [[NSUserDefaults standardUserDefaults] setObject:expiryDate forKey:kVKDefaultsExpirationDate];
+            NSInteger expiresInInteger = expiresInString.integerValue;
+            if ( expiresInInteger > 0 ) {
+                NSDate *expiryDate = [NSDate dateWithTimeIntervalSinceNow:expiresInString.integerValue];
+                INFO(@"Expiry date: %@", expiryDate);
+                [[NSUserDefaults standardUserDefaults] setObject:expiryDate forKey:kVKDefaultsExpirationDate];
+            } else {
+                INFO(@"Expiry date: NEVER");
+            }
         }
     }
 
@@ -175,15 +198,6 @@
             return [keyValuePairs objectAtIndex:i+1];
     }
     return nil;
-}
-
-- (void)dealloc {
-    [access_token release];
-    [messageToPost release];
-    [token release];
-    [mainWebView release];
-    [_activityIndicator release];
-    [super dealloc];
 }
 
 @end

@@ -108,15 +108,21 @@
     }
 
     NSDate *expiryDate = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsExpirationDate];
-    NSTimeInterval delta = [expiryDate timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970];
 
-    if ( delta <= 0 ) {
-        INFO(@"Access token expired");
-        return NO;
+    if ( expiryDate ) {
+        NSTimeInterval delta = [expiryDate timeIntervalSince1970] - [[NSDate date] timeIntervalSince1970];
+
+        if ( delta <= 0 ) {
+            INFO(@"Access token expired");
+            return NO;
+        }
+
+        INFO(@"Seconds till expiration: %.0f", delta);
+    } else {
+        INFO(@"Access token will never expired");
     }
 
     INFO(@"Access token loaded from user defaults: %@", accessToken);
-    INFO(@"Seconds till expiration: %.0f", delta);
 
     return YES;
 }
@@ -328,7 +334,7 @@
 #pragma mark - VkontakteVCDelegate
 
 - (void)vk:(VkontakteVC *)viewController completedAuthenticationWithStatus:(BOOL)isSuccessful {
-    [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissModalViewControllerAnimated:YES];
+    [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissModalViewControllerAnimated:NO];
     [self setIsAuth:isSuccessful];
 
     if ( isSuccessful ) {
