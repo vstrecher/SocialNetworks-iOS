@@ -31,7 +31,11 @@
         [self setIsAuth:[self isAccessTokenValid]];
         if ( self.isAuth ) {
             if ( self.picture.length) {
-                [self sendImageData:UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:self.picture], 1.0) text:self.post];
+                if ([self.picture hasPrefix:@"photo"] ) {
+                    [self sendUploadedImage:self.picture text:self.post];
+                } else {
+                    [self sendImageData:UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:self.picture], 1.0) text:self.post];
+                }
             } else {
                 [self sendText:self.post];
             }
@@ -118,12 +122,16 @@
 }
 
 - (void)sendText:(NSString *)text {
+    [self sendUploadedImage:nil text:text];
+}
+
+- (void)sendUploadedImage:(NSString *)uploadedImage text:(NSString *)text {
     if ( ! self.isAuth ) return;
 
     NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsAccessToken];
     NSString *user_id = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsUserId];
 
-    NSDictionary *result = [self sendRequest:kWallPostURL(user_id, accessToken, [self URLEncodedString:text], nil) withCaptcha:NO];
+    NSDictionary *result = [self sendRequest:kWallPostURL(user_id, accessToken, [self URLEncodedString:text], uploadedImage) withCaptcha:NO];
 
     NSString *errorMsg = [[result objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
     if(errorMsg) {

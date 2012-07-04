@@ -71,18 +71,22 @@
 
 
 - (void)loginDidSucceeded {
+    Log(@"");
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLoginSuccessful object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
 }
 
 - (void)loginDidFail {
+    Log(@"");
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLoginError object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
 }
 
 - (void)logoutDidSucceeded {
+    Log(@"");
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLogoutSuccessful object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
 }
 
 - (void)logoutDidFail {
+    Log(@"");
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNetworkLogoutError object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.type, @"type", nil]];
 }
 
