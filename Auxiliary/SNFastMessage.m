@@ -11,13 +11,16 @@
 @implementation SNFastMessage
 
 + (void)showFastMessageWithTitle:(NSString *)title {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:@"" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
-    [alertView show];
-    [alertView release];
+    [self showFastMessageWithTitle:title message:@"" delegate:nil];
 }
 
 + (void)showFastMessageWithTitle:(NSString *)title message:(NSString *)message{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+    [self showFastMessageWithTitle:title message:message delegate:nil];
+}
+
++ (void)showFastMessageWithTitle:(NSString *)title message:(NSString *)message delegate:(id)delegate
+{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:delegate cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
     [alertView show];
     [alertView release];
 }

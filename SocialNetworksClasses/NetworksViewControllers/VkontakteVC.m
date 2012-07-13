@@ -44,12 +44,13 @@
         closeButton.frame = CGRectMake(10, 10, 25, 25);
         [closeButton setTitle:@"✖" forState:UIControlStateNormal];
         [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:closeButton];
+//        [self.view addSubview:closeButton];
 
         mainWebView = [[UIWebView alloc] init];
         mainWebView.delegate = self;
         mainWebView.frame = CGRectMake(0, 0, 320, 460);
-        [self.view insertSubview:mainWebView belowSubview:closeButton];
+//        [self.view insertSubview:mainWebView belowSubview:closeButton];
+        [self.view addSubview:mainWebView];
 
         [self setActivityIndicator:[[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease]];
         [self.activityIndicator setFrame:(CGRect){CENTER_IN_PARENT(self.view, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height), self.activityIndicator.frame.size}];
@@ -115,7 +116,12 @@
 #pragma mark - User Interactions
 
 - (void)close {
-    [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissModalViewControllerAnimated:YES];
+    [self dismissModalViewControllerAnimated:YES];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    [self close];
 }
 
 #pragma mark - UIWebView Delegate
@@ -151,7 +157,7 @@
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     INFO(@"FAIL: %@ %@", mainWebView.request.URL.absoluteString, error.localizedDescription);
     [self.activityIndicator stopAnimating];
-    [SNFastMessage showFastMessageWithTitle:@"Error" message:[error localizedDescription]];
+    [SNFastMessage showFastMessageWithTitle:@"Error" message:[error localizedDescription] delegate:self];
 }
 
 #pragma mark - Private Methods

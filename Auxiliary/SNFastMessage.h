@@ -14,5 +14,6 @@
 
 + (void)showFastMessageWithTitle:(NSString *)title message:(NSString *)message;
 
++ (void)showFastMessageWithTitle:(NSString *)title message:(NSString *)message delegate:(id)delegate;
 
 @end

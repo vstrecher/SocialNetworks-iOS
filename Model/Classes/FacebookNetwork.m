@@ -59,9 +59,9 @@
 - (void)logout {
     if ( self.fullVersion ) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	[defaults removeObjectForKey:kFBDefaultsAccessToken];
-	[defaults removeObjectForKey:kFBDefaultsExpirationDate];
-	[self getFacebookInstance];
+        [defaults removeObjectForKey:kFBDefaultsAccessToken];
+        [defaults removeObjectForKey:kFBDefaultsExpirationDate];
+        [self getFacebookInstance];
         [facebook logout];
     }
 }
