@@ -85,7 +85,7 @@
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kVKDefaultsUserId];
         [[NSUserDefaults standardUserDefaults] synchronize];
 
-        [self sendSuccessWithMessage:@"Log out succeeded"];
+        [self sendSuccessWithMessage:NSLocalizedString(@"Вы успешно вышли из сети.", @"Вы успешно вышли из сети.")];
         [super logoutDidSucceeded];
     }
 }
@@ -140,10 +140,11 @@
     NSDictionary *result = [self sendRequest:kWallPostURL(user_id, accessToken, [self URLEncodedString:text], uploadedImage) withCaptcha:NO];
 
     NSString *errorMsg = [[result objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
+    INFO(@"%@", errorMsg);
     if(errorMsg) {
-        [self sendFailedWithError:errorMsg];
+        [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
     } else {
-        [self sendSuccessWithMessage:@"Text posted!"];
+        [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
     }
 }
 
@@ -170,9 +171,9 @@
 
     NSString *errorMsg = [[postToWallDict  objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
     if(errorMsg) {
-        [self sendFailedWithError:errorMsg];
+        [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
     } else {
-        [self sendSuccessWithMessage:@"Image posted!"];
+        [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
     }
 }
 
@@ -180,14 +181,14 @@
     if ( self.isCaptcha ) {
         return;
     }
-    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"Error"
+    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Ошибка", @"Ошибка")
                                                           message:error delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
     [myAlertView show];
     [myAlertView release];
 }
 
 - (void) sendSuccessWithMessage:(NSString *)message {
-    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"Success"
+    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ВКонтакте", @"ВКонтакте")
                                                           message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
     [myAlertView show];
     [myAlertView release];
@@ -290,8 +291,9 @@
 
 - (void) getCaptcha {
     NSString *captcha_img = [[NSUserDefaults standardUserDefaults] objectForKey:kVKCaptchaImgKey];
-    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"Enter captch:\n\n\n\n\n"
-                                                          message:@"\n" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
+    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"Введите цифры с изображения:\n\n\n\n\n"
+                                                          message:@"\n" delegate:self cancelButtonTitle:NSLocalizedString(@"Отмена", @"Отмена")
+                                                                                      otherButtonTitles:NSLocalizedString(@"Ок", @"Ок"), nil];
 
     UIImageView *imageView = [[[UIImageView alloc] initWithFrame:CGRectMake(12.0, 45.0, 130.0, 50.0)] autorelease];
     imageView.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:captcha_img]]];
@@ -324,9 +326,9 @@
         NSDictionary *newRequestDict =[self sendRequest:request withCaptcha:YES];
         NSString *errorMsg = [[newRequestDict  objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
         if(errorMsg) {
-            [self sendFailedWithError:errorMsg];
+            [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
         } else {
-            [self sendSuccessWithMessage:@"Message posted!"];
+            [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
         }
     }
 }

@@ -157,7 +157,7 @@
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     INFO(@"FAIL: %@ %@", mainWebView.request.URL.absoluteString, error.localizedDescription);
     [self.activityIndicator stopAnimating];
-    [SNFastMessage showFastMessageWithTitle:@"Error" message:[error localizedDescription] delegate:self];
+    [SNFastMessage showFastMessageWithTitle:@"Ошибка" message:[error localizedDescription] delegate:self];
 }
 
 #pragma mark - Private Methods

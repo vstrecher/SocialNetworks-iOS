@@ -135,8 +135,8 @@
 {
     Log(@"fbDidNotLogin");
 
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error!", @"Error!")
-                                                        message:NSLocalizedString(@"Could not login to Facebook", @"Could not login to Facebook") delegate:nil
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Ошибка", @"Ошибка")
+                                                        message:NSLocalizedString(@"Не удалось войти в Facebook.", @"Could not login to Facebook") delegate:nil
                                               cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
     [alertView release];
@@ -162,8 +162,8 @@
 {
     Log(@"request did load: %@", result);
 
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Done!", @"Done!")
-                                                        message:NSLocalizedString(@"Facebook sharing successful", @"Facebook sharing successful") delegate:nil
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Facebook", @"Facebook")
+                                                        message:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!") delegate:nil
                                               cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
     [alertView release];
@@ -177,9 +177,12 @@
         Log(@"OAuthException - relogin...");
         [facebook authorize:[NSArray arrayWithObjects:@"publish_stream", nil]];
     } else {
-        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error sharing to facebook", @"Error sharing to facebook")
-                                                            message:error.localizedDescription delegate:nil
-                                                  cancelButtonTitle:NSLocalizedString(@"OK", @"OK") otherButtonTitles:nil];
+        Log(@"%@", error.localizedDescription);
+        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Ошибка", @"Error sharing to facebook")
+                                                            message:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", @"OK")
+                                                  otherButtonTitles:nil];
         [alertView show];
         [alertView release];
     }
@@ -195,9 +198,9 @@
     Log(@"<FBDialogDelegate>.dialogDidCompleteWithURL: %@", url);
 
     if ([url.absoluteString rangeOfString:@"post_id="].location != NSNotFound) {
-        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Done!", @"Done!")
-                                                            message:NSLocalizedString(@"Facebook sharing successful", @"Facebook sharing successful") delegate:nil
-                                                  cancelButtonTitle:NSLocalizedString(@"OK", @"OK") otherButtonTitles:nil];
+        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Facebook", @"Facebook")
+                                                            message:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!") delegate:nil
+                                                  cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alertView show];
         [alertView release];
     }
@@ -218,9 +221,12 @@
 {
     Log(@"<FBDialogDelegate>.didFailWithError: %@", dialog);
 
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error sharing to facebook", @"Error sharing to facebook")
-                                                        message:error.localizedDescription delegate:nil
-                                              cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    Log(@"%@", error.localizedDescription);
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Ошибка", @"Error sharing to facebook")
+                                                        message:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", @"OK")
+                                              otherButtonTitles:nil];
     [alertView show];
     [alertView release];
 }
