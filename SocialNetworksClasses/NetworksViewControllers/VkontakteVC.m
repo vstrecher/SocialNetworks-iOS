@@ -1,4 +1,3 @@
-//
 //  VkontakteVC.m
 //  MTSSharing
 //
@@ -40,17 +39,16 @@
         // Custom initialization
         self.view.backgroundColor = [UIColor whiteColor];
 
-        closeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        closeButton.frame = CGRectMake(10, 10, 25, 25);
-        [closeButton setTitle:@"✖" forState:UIControlStateNormal];
+        closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        closeButton.frame = CGRectMake(320 - 7 - 32, 7, 32, 32);
+        [closeButton setImage:[UIImage imageNamed:@"sn-close-dialog.png"] forState:UIControlStateNormal];
         [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-//        [self.view addSubview:closeButton];
+        [self.view addSubview:closeButton];
 
         mainWebView = [[UIWebView alloc] init];
         mainWebView.delegate = self;
         mainWebView.frame = CGRectMake(0, 0, 320, 460);
-//        [self.view insertSubview:mainWebView belowSubview:closeButton];
-        [self.view addSubview:mainWebView];
+        [self.view insertSubview:mainWebView belowSubview:closeButton];
 
         [self setActivityIndicator:[[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease]];
         [self.activityIndicator setFrame:(CGRect){CENTER_IN_PARENT(self.view, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height), self.activityIndicator.frame.size}];
