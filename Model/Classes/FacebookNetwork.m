@@ -8,6 +8,7 @@
 
 #import "FacebookNetwork.h"
 #import "SNDefines.h"
+#import "SNFastMessage.h"
 
 
 @interface FacebookNetwork ()
@@ -155,6 +156,8 @@
 - (void)fbDidLogout
 {
     Log(@"fbDidLogout");
+    [SNFastMessage showFastMessageWithTitle:NSLocalizedString(@"Facebook", @"Facebook")
+                                    message:NSLocalizedString(@"Вы успешно вышли из сети.", @"Вы успешно вышли из сети.")];
     [super logoutDidSucceeded];
 }
 
