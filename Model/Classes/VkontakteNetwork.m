@@ -305,7 +305,7 @@
 
 - (void) getCaptcha {
     NSString *captcha_img = [[NSUserDefaults standardUserDefaults] objectForKey:kVKCaptchaImgKey];
-    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"Введите цифры с изображения:\n\n\n\n\n"
+    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"Введите код с картинки:\n\n\n\n\n"
                                                           message:@"\n" delegate:self cancelButtonTitle:NSLocalizedString(@"Отмена", @"Отмена")
                                                                                       otherButtonTitles:NSLocalizedString(@"Ок", @"Ок"), nil];
 
