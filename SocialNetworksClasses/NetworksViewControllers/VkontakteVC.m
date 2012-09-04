@@ -10,6 +10,8 @@
 #import "VkontakteVCDelegate.h"
 #import "SNFastMessage.h"
 #import "Macros.h"
+#import "SNSocialNetwork.h"
+#import "VkontakteNetwork.h"
 
 #define CALLBACK_VK_URL @"http://api.vk.com/blank.html"
 #define CALLBACK_VKONTAKTE_URL @"http://api.vkontakte.ru/blank.html"
@@ -39,15 +41,17 @@
         // Custom initialization
         self.view.backgroundColor = [UIColor whiteColor];
 
+        CGSize size = [[[UIApplication sharedApplication] keyWindow] bounds].size;
+
         closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        closeButton.frame = CGRectMake(320 - 7 - 32, 7, 32, 32);
+        closeButton.frame = CGRectMake(size.width - 7 - 32, 7, 32, 32);
         [closeButton setImage:[UIImage imageNamed:@"sn-close-dialog.png"] forState:UIControlStateNormal];
         [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:closeButton];
 
         mainWebView = [[UIWebView alloc] init];
         mainWebView.delegate = self;
-        mainWebView.frame = CGRectMake(0, 0, 320, 460);
+        mainWebView.frame = CGRectMake(0, 0, size.width, size.height);
         [self.view insertSubview:mainWebView belowSubview:closeButton];
 
         [self setActivityIndicator:[[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease]];
@@ -114,7 +118,8 @@
 #pragma mark - User Interactions
 
 - (void)close {
-    [self dismissModalViewControllerAnimated:YES];
+    [[SNSocialNetwork vkNetwork] hideAuthViewController];
+//    [self dismissModalViewControllerAnimated:YES];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex

@@ -95,8 +95,22 @@
     vkontakteVC.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     vkontakteVC.token = self.token;
     [vkontakteVC setDelegate:self];
-    [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentModalViewController:vkontakteVC animated:YES];
+
+    if ( [SNSocialNetwork presentWithNotification] ) {
+        NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:vkontakteVC, NOTIFICATION_VIEW_CONTROLLER, nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:SHOW_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil userInfo:info];
+    } else {
+        [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentModalViewController:vkontakteVC animated:YES];
+    }
     [vkontakteVC release];
+}
+
+- (void)hideAuthViewController {
+    if ( [SNSocialNetwork presentWithNotification] ) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil userInfo:nil];
+    } else {
+        [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissModalViewControllerAnimated:NO];
+    }
 }
 
 - (BOOL)isAccessTokenValid {
@@ -336,7 +350,7 @@
 #pragma mark - VkontakteVCDelegate
 
 - (void)vk:(VkontakteVC *)viewController completedAuthenticationWithStatus:(BOOL)isSuccessful {
-    [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissModalViewControllerAnimated:NO];
+    [self hideAuthViewController];
     [self setIsAuth:isSuccessful];
 
     if ( isSuccessful ) {

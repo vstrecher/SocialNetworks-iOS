@@ -16,6 +16,11 @@
 - (BOOL)isLogged;
 - (void)login;
 - (void)logout;
+
+- (void)showAuthViewController;
+
+- (void)hideAuthViewController;
+
 - (void)postMessage;
 
 @end
