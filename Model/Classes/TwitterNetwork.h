@@ -10,4 +10,6 @@
 #import "TwitterVC.h"
 
 @interface TwitterNetwork : SNSocialNetwork <TwitterDelegate>
+- (void)postMessage;
+
 @end
