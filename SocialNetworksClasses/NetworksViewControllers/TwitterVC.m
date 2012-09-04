@@ -288,13 +288,13 @@
 
 //----------------------------------------------------------------
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+/*- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
         return interfaceOrientation == UIInterfaceOrientationPortrait;
     else
         return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 
-}
+}*/
 
 //----------------------------------------------------------------
 
