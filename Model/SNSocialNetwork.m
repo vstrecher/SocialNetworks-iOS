@@ -11,6 +11,8 @@
 #import "VkontakteNetwork.h"
 #import "SNSocialsXMLParser.h"
 #import "SNDefines.h"
+#import "TwitterNetwork.h"
+#import "EmailNetwork.h"
 
 @implementation SNSocialNetwork
 @synthesize name;
@@ -101,6 +103,10 @@ static BOOL _presentWithNotification = NO;
     _presentWithNotification = withNotification;
 }
 
++ (void)initiate {
+    [[SNSocialsXMLParser instance] getNetworks];
+}
+
 + (FacebookNetwork *)facebookNetwork {
     FacebookNetwork *facebookNetwork = (FacebookNetwork *) [[SNSocialsXMLParser instance] getNetworkWithType:CONFIG_FACEBOOK_TYPE];
     return facebookNetwork;
@@ -109,6 +115,16 @@ static BOOL _presentWithNotification = NO;
 + (VkontakteNetwork *)vkNetwork {
     VkontakteNetwork *vkontakteNetwork = (VkontakteNetwork *) [[SNSocialsXMLParser instance] getNetworkWithType:CONFIG_VK_TYPE];
     return vkontakteNetwork;
+}
+
++ (TwitterNetwork *)twitterNetwork {
+    TwitterNetwork *network = (TwitterNetwork *) [[SNSocialsXMLParser instance] getNetworkWithType:CONFIG_TWITTER_TYPE];
+    return network;
+}
+
++ (EmailNetwork *)emailNetwork {
+    EmailNetwork *network = (EmailNetwork *) [[SNSocialsXMLParser instance] getNetworkWithType:CONFIG_EMAIL_TYPE];
+    return network;
 }
 
 @end

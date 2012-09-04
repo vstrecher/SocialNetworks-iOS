@@ -10,6 +10,8 @@
 
 @class FacebookNetwork;
 @class VkontakteNetwork;
+@class TwitterNetwork;
+@class EmailNetwork;
 
 @interface SNSocialNetwork : NSObject {
 @protected
@@ -49,8 +51,13 @@
 + (void)setPresentWithNotification:(BOOL)withNotification;
 + (BOOL)presentWithNotification;
 
-+ (FacebookNetwork *)facebookNetwork;
 + (VkontakteNetwork *)vkNetwork;
+
++ (void)initiate;
+
++ (FacebookNetwork *)facebookNetwork;
++ (TwitterNetwork *)twitterNetwork;
++ (EmailNetwork *)emailNetwork;
 
 - (void)postMessage;
 - (BOOL)isLogged;
