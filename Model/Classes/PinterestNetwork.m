@@ -10,7 +10,7 @@
 }
 
 - (NSString *)protectedFromString:(NSString *)string {
-    NSString *protectedString = (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,(__bridge CFStringRef)string, NULL, (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% \n",CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+    NSString *protectedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,(CFStringRef)string, NULL, (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% \n",CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
     return protectedString;
 }
 
