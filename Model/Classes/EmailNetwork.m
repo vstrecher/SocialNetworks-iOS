@@ -33,7 +33,7 @@
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
     if (result == MFMailComposeResultSent) {
-        [SNFastMessage showFastMessageWithTitle:NSLocalizedString(@"Email successfully sended", @"Email successfully sended")];
+        [SNFastMessage showFastMessageWithTitle:NSLocalizedString(@"Email successfully sent", @"Email successfully sent")];
     }
 
     [[NSNotificationCenter defaultCenter] postNotificationName:HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil];
