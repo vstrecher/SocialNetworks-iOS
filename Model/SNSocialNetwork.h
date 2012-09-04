@@ -46,6 +46,9 @@
 @property(nonatomic, copy) NSString *type;
 
 
++ (void)setPresentWithNotification:(BOOL)withNotification;
++ (BOOL)presentWithNotification;
+
 + (FacebookNetwork *)facebookNetwork;
 + (VkontakteNetwork *)vkNetwork;
 

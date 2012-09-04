@@ -28,6 +28,7 @@
 @synthesize isLoginAction = _isLoginAction;
 @synthesize type = _type;
 
+static BOOL _presentWithNotification = NO;
 
 - (void)dealloc {
     [name release];
@@ -91,6 +92,14 @@
 }
 
 #pragma mark - Instance Methods
+
++ (BOOL)presentWithNotification {
+    return _presentWithNotification;
+}
+
++ (void)setPresentWithNotification:(BOOL)withNotification {
+    _presentWithNotification = withNotification;
+}
 
 + (FacebookNetwork *)facebookNetwork {
     FacebookNetwork *facebookNetwork = (FacebookNetwork *) [[SNSocialsXMLParser instance] getNetworkWithType:CONFIG_FACEBOOK_TYPE];
