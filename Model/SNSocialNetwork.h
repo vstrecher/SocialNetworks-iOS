@@ -28,6 +28,7 @@
     NSString *messageDescription;
     NSString *_type;
     NSNumber *_fullVersion;
+    NSString *_permissions;
 
     BOOL _isLoginAction;
 }
@@ -46,6 +47,7 @@
 @property(nonatomic, retain) NSNumber *fullVersion;
 @property(nonatomic, assign) BOOL isLoginAction;
 @property(nonatomic, copy) NSString *type;
+@property(nonatomic, copy) NSString *permissions;
 
 
 + (void)setPresentWithNotification:(BOOL)withNotification;

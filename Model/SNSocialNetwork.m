@@ -29,6 +29,8 @@
 @synthesize fullVersion = _fullVersion;
 @synthesize isLoginAction = _isLoginAction;
 @synthesize type = _type;
+@synthesize permissions = _permissions;
+
 
 static BOOL _presentWithNotification = NO;
 
@@ -46,6 +48,7 @@ static BOOL _presentWithNotification = NO;
     [messageDescription release];
     [_fullVersion release];
     [_type release];
+    [_permissions release];
     [super dealloc];
 
 }
