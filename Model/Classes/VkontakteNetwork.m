@@ -19,12 +19,40 @@
 
 - (NSString *)sharingURL;
 
+- (void)doLogout;
+
+- (BOOL)isAccessTokenValid;
+
+- (void)sendText:(NSString *)text;
+
+- (void)sendText:(NSString *)text link:(NSString *)aLink;
+
+- (void)sendUploadedImage:(NSString *)uploadedImage text:(NSString *)text;
+
+- (void)sendUploadedImage:(NSString *)uploadedImage text:(NSString *)text link:(NSString *)aLink;
+
+
+- (void)sendImageData:(NSData *)imageData text:(NSString *)text;
+
+- (void)sendFailedWithError:(NSString *)error;
+
+- (void)sendSuccessWithMessage:(NSString *)message;
+
+- (NSString *)URLEncodedString:(NSString *)str;
+
+
+- (NSDictionary *)sendRequest:(NSString *)reqURl withCaptcha:(BOOL)captcha;
+
+- (NSDictionary *)sendPOSTRequest:(NSString *)reqURl withImageData:(NSData *)imageData;
+
+- (void)getCaptcha;
+
+
 @end
 
 @implementation VkontakteNetwork
 @synthesize isCaptcha = _isCaptcha;
 @synthesize isAuth = _isAuth;
-
 
 - (void)postMessage {
     if ( self.fullVersion ) {
@@ -37,7 +65,11 @@
                     [self sendImageData:UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:self.picture], 1.0) text:self.post];
                 }
             } else {
-                [self sendText:self.post];
+                if ( self.link.length ) {
+                    [self sendText:self.post link:self.link];
+                } else {
+                    [self sendText:self.post];
+                }
             }
         } else {
             [self showAuthViewController];
@@ -94,6 +126,16 @@
     VkontakteVC *vkontakteVC = [[VkontakteVC alloc] init];
     vkontakteVC.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     vkontakteVC.token = self.token;
+
+    /* adding this condition for support other applications where permissions were hardcoded */
+    NSString *permissions = self.permissions;
+    if ( ! permissions.length ) {
+        INFO(@"Using predefined permissions");
+        permissions = @"wall,photos,offline";
+    }
+    INFO(@"Permissions: %@", permissions);
+    vkontakteVC.permissions = permissions;
+
     [vkontakteVC setDelegate:self];
 
     if ( [SNSocialNetwork presentWithNotification] ) {
@@ -145,13 +187,36 @@
     [self sendUploadedImage:nil text:text];
 }
 
+- (void)sendText:(NSString *)text link:(NSString *)aLink {
+    [self sendUploadedImage:nil text:text link:aLink];
+}
+
 - (void)sendUploadedImage:(NSString *)uploadedImage text:(NSString *)text {
+    [self sendUploadedImage:uploadedImage text:text link:nil];
+}
+
+- (void)sendUploadedImage:(NSString *)uploadedImage text:(NSString *)text link:(NSString *)aLink {
     if ( ! self.isAuth ) return;
 
     NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsAccessToken];
     NSString *user_id = [[NSUserDefaults standardUserDefaults] objectForKey:kVKDefaultsUserId];
 
-    NSDictionary *result = [self sendRequest:kWallPostURL(user_id, accessToken, [self URLEncodedString:text], uploadedImage) withCaptcha:NO];
+    NSMutableString *attachments = [[NSMutableString alloc] init];
+
+    if ( ! uploadedImage ) {
+        uploadedImage = @"";
+    }
+
+    [attachments appendString:uploadedImage];
+
+    NSString *linkToPost = @"";
+    if ( aLink.length ) {
+        linkToPost = [NSString stringWithFormat:@"%@", [self URLEncodedString:aLink]];
+    }
+
+    [attachments appendFormat:@",%@", linkToPost];
+
+    NSDictionary *result = [self sendRequest:kWallPostURL(user_id, accessToken, [self URLEncodedString:text], attachments) withCaptcha:NO];
 
     NSString *errorMsg = [[result objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
     INFO(@"%@", errorMsg);
@@ -160,6 +225,8 @@
     } else {
         [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
     }
+
+    [attachments release];
 }
 
 - (void)sendImageData:(NSData *)imageData text:(NSString *)text {
