@@ -21,6 +21,9 @@
 
 
 - (void)close;
+
+- (void)findAccessTokenAndStuff:(NSString *)responseURL;
+
 - (NSString *)getParameterFromString:(NSString *)string withKey:(NSString *)key;
 
 @end
@@ -32,6 +35,7 @@
 @synthesize token;
 @synthesize delegate = _delegate;
 @synthesize activityIndicator = _activityIndicator;
+@synthesize permissions = _permissions;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -70,6 +74,7 @@
     [messageToPost release], messageToPost = nil;
     [token release], token = nil;
     [self setActivityIndicator:nil];
+    [_permissions release];
     [super dealloc];
 }
 
@@ -102,7 +107,7 @@
 
     [mainWebView stopLoading];
 
-    NSString *string = [NSString stringWithFormat:@"http://oauth.vk.com/authorize?client_id=%@&scope=wall,photos,offline&redirect_uri=http://oauth.vk.com/blank.html&display=touch&response_type=token", self.token];
+    NSString *string = [NSString stringWithFormat:@"http://oauth.vk.com/authorize?client_id=%@&scope=%@&redirect_uri=http://oauth.vk.com/blank.html&display=touch&response_type=token", self.token, self.permissions];
     NSString *webString = [string stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [mainWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:webString]]];
 

@@ -18,6 +18,7 @@
     NSString *access_token;
     NSString *messageToPost;
     NSString *token;
+    NSString *_permissions;
 
     id <VkontakteVCDelegate> _delegate;
 }
@@ -25,5 +26,7 @@
 @property(nonatomic, retain) NSString *messageToPost;
 @property(nonatomic, retain) NSString *token;
 @property(nonatomic, assign) id <VkontakteVCDelegate> delegate;
+@property(nonatomic, copy) NSString *permissions;
+
 
 @end
