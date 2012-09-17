@@ -17,8 +17,16 @@
     MFMailComposeViewController* controller = [[MFMailComposeViewController alloc] init];
     controller.mailComposeDelegate = self;
     [controller setSubject:self.subject];
-    [controller setMessageBody:self.post
-                        isHTML:NO];
+    if ( self.fullVersion ) {
+        id appDelegate = [[UIApplication sharedApplication] delegate];
+
+        [controller setMessageBody:[appDelegate valueForKey:@"emailSharingHTMLString"]
+                            isHTML:YES];
+    } else {
+        [controller setMessageBody:self.post
+                            isHTML:NO];
+    }
+
 
     if (controller) {
         NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] initWithObjectsAndKeys:controller, NOTIFICATION_VIEW_CONTROLLER, nil];
