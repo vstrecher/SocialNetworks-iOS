@@ -12,6 +12,8 @@
 
 
 @interface FacebookNetwork ()
+- (void)getFacebookInstance;
+
 - (NSString *)sharingURL;
 - (void)sendToFacebook;
 @end
