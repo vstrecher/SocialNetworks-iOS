@@ -157,10 +157,15 @@
 
     NSDictionary *replyDictionary = [reply objectFromJSONString]; //TODO: add JSONKit as submodule to SocialNetworks
 
-    if ([reply rangeOfString:@"error"].location == NSNotFound) {
+    if ( [reply rangeOfString:@"error"].location == NSNotFound && response ) {
         [delegate tweetSent];
     } else {
-        [delegate tweetFailedWithError:[NSError errorWithDomain:[replyDictionary objectForKey:@"error"] code:0 userInfo:nil]];
+
+        NSString *errorDomain = [replyDictionary objectForKey:@"error"];
+        if ( ! errorDomain ) {
+            errorDomain = @"Network is unreachable.";
+        }
+        [delegate tweetFailedWithError:[NSError errorWithDomain:errorDomain code:0 userInfo:nil]];
     }
 
     [reply release];

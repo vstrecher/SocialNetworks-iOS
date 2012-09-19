@@ -51,14 +51,13 @@
 - (void)tweetSent {
     [[NSNotificationCenter defaultCenter] postNotificationName:HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil];
     Log(@"twit sent");
-    [SNFastMessage showFastMessageWithTitle:NSLocalizedString(@"Twit sent", @"Twit sent")];
-
+    [SNFastMessage showFastMessageWithTitle:@"Twitter" message:@"Запись успешно опубликована!"];
 }
 
 - (void)tweetFailedWithError:(NSError *)error {
     [[NSNotificationCenter defaultCenter] postNotificationName:HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil];
     Log(@"twit failed: %@", error);
-    [SNFastMessage showFastMessageWithTitle:NSLocalizedString(@"Twit sending failed", @"Twit sending failed") message:[error localizedDescription]];
+    [SNFastMessage showFastMessageWithTitle:@"Error" message:[error localizedDescription]];
 
 }
 
