@@ -61,14 +61,16 @@
 
     closeButton = nil;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        closeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        closeButton.frame = CGRectMake(10, 10, 25, 25);
+        closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        closeButton.frame = CGRectMake(self.view.frame.size.width - 7 - 32, 7, 32, 32);
+        [closeButton setImage:[UIImage imageNamed:@"sn-close-dialog.png"] forState:UIControlStateNormal];
         [closeButton setTitle:@"✖" forState:UIControlStateNormal];
         [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:closeButton];
     } else {
         closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [closeButton setImage:[UIImage imageNamed:@"sn-close-dialog.png"] forState:UIControlStateNormal];
+        closeButton.frame = CGRectMake(self.view.frame.size.width - 7 - 32, 7, 32, 32);
         [closeButton sizeToFit];
         [closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
         [closeButton.layer setShadowColor:[[UIColor blackColor] CGColor]];
@@ -77,6 +79,7 @@
         [closeButton.layer setShadowRadius:2];
         [self.view addSubview:closeButton];
     }
+
 
     return self;
 }
@@ -270,7 +273,7 @@
 {
     if (!activityIndicatorView) {
         activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle: UIActivityIndicatorViewStyleGray];
-        activityIndicatorView.center = CGPointMake(self.view.frame.size.width - activityIndicatorView.frame.size.width , activityIndicatorView.frame.size.height);
+        activityIndicatorView.center = CGPointMake(floorf(self.view.frame.size.width / 2.0), floorf(self.view.frame.size.height / 2.0));
         activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin ;
         [activityIndicatorView startAnimating];
         [self.view addSubview: activityIndicatorView];
