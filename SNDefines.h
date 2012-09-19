@@ -59,6 +59,7 @@
 #define kVKServerKey @"server"
 #define kVKIdKey @"id"
 #define kVKErrorMsgKey @"error_msg"
+#define kVKErrorCode @"error_code"
 #define kVKCaptchaSidKey @"captcha_sid"
 #define kVKCaptchaImgKey @"captcha_img"
 #define kVKRequestKey @"request"

@@ -220,15 +220,23 @@
         linkToPost = [NSString stringWithFormat:@"%@", [self URLEncodedString:aLink]];
     }
 
-    [attachments appendFormat:@",%@", linkToPost];
+    if ( attachments.length ) {
+        [attachments appendString:@","];
+    }
+    [attachments appendFormat:@"%@", linkToPost];
 
     NSDictionary *result = [self sendRequest:kWallPostURL(user_id, accessToken, [self URLEncodedString:text], attachments) withCaptcha:NO];
 
     NSString *errorMsg = [[result objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
+    NSInteger errorCode = [[[result objectForKey:kVKErrorKey] objectForKey:kVKErrorCode] integerValue];
     INFO(@"%@", errorMsg);
-    if(errorMsg) {
-        [self clearToken];
-        [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
+    if( errorMsg || !result ) {
+        if ( errorCode == 5 ) {
+            [self clearToken];
+            [self postMessage];
+        } else {
+            [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
+        }
     } else {
         [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
     }
