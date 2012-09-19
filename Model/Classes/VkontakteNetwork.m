@@ -125,7 +125,6 @@
 - (void)showAuthViewController {
     VkontakteVC *vkontakteVC = [[VkontakteVC alloc] init];
     vkontakteVC.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    vkontakteVC.token = self.token;
 
     /* adding this condition for support other applications where permissions were hardcoded */
     NSString *permissions = self.permissions;
@@ -135,6 +134,8 @@
     }
     INFO(@"Permissions: %@", permissions);
     vkontakteVC.permissions = permissions;
+
+    vkontakteVC.token = self.token;
 
     [vkontakteVC setDelegate:self];
 
@@ -183,6 +184,11 @@
     return YES;
 }
 
+- (void)clearToken {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kVKDefaultsAccessToken];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kVKDefaultsExpirationDate];
+}
+
 - (void)sendText:(NSString *)text {
     [self sendUploadedImage:nil text:text];
 }
@@ -221,6 +227,7 @@
     NSString *errorMsg = [[result objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
     INFO(@"%@", errorMsg);
     if(errorMsg) {
+        [self clearToken];
         [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
     } else {
         [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
