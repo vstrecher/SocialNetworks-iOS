@@ -4,6 +4,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import "PinterestVC.h"
+#import "UIView+FrameAccessor.h"
 
 @interface PinterestVC ()
 @property(nonatomic, retain) UIWebView *webView;
@@ -81,12 +82,10 @@
 
 - (void)createDismissButton {
     [self setDismissButton:[UIButton buttonWithType:UIButtonTypeCustom]];
-    [self.dismissButton setImage:[UIImage imageNamed:@"sn-close-dialog.png"] forState:UIControlStateNormal];
+    [self.dismissButton setTitle:@"✕" forState:UIControlStateNormal];
     [self.dismissButton addTarget:self action:@selector(dismissButtonDidClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.dismissButton.layer setShadowColor:[[UIColor blackColor] CGColor]];
-    [self.dismissButton.layer setShadowOffset:CGSizeMake(0, 1)];
-    [self.dismissButton.layer setShadowOpacity:0.4];
-    [self.dismissButton.layer setShadowRadius:2];
+    [self.dismissButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [self.dismissButton setTitleColor:[UIColor darkGrayColor] forState:UIControlStateHighlighted];
 }
 
 - (void)setUpViews {
@@ -103,7 +102,9 @@
 
 - (void)sizeAndPlaceViews {
     [self.webView setFrame:self.view.bounds];
-    [self.dismissButton sizeToFit];
+    [self.dismissButton setSize:CGSizeMake(27, 27)];
+
+    [self.dismissButton setOrigin:CGPointMake(self.view.width - self.dismissButton.width - 13, 10)];
 }
 
 #pragma mark - Private
@@ -112,7 +113,7 @@
 {
     if (!self.activityIndicatorView) {
         self.activityIndicatorView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle: UIActivityIndicatorViewStyleGray] autorelease];
-        self.activityIndicatorView.center = CGPointMake(self.view.frame.size.width - self.activityIndicatorView.frame.size.width , self.activityIndicatorView.frame.size.height);
+        self.activityIndicatorView.center = CGPointMake(floorf(self.view.frame.size.width / 2.0), floorf(self.view.frame.size.height / 2.0));
         self.activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin ;
         [self.activityIndicatorView startAnimating];
         [self.view addSubview: self.activityIndicatorView];
@@ -156,6 +157,7 @@
 #pragma mark - UIWebViewDelegate
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    INFO(@"%@", request.URL.absoluteString);
     [self addActivityIndicator];
 //    [self hideWebView];
     return YES;

@@ -15,9 +15,11 @@
 }
 
 - (NSString *)generatePinterestURL {
-    NSString *description = [self protectedFromString:self.messageDescription];
-    NSString *protectedUrl = [self protectedFromString:self.link];
-    NSString *buttonUrl = [NSString stringWithFormat:@"http://pinterest.com/pin/create/button/?url=www.archergoods.com&media=%@&description=%@", protectedUrl, description];
+    NSString *description = [self protectedFromString:self.messageName];
+    NSString *protectedPictureUrl = [self protectedFromString:self.picture];
+    NSString *protectedUrl = [self protectedFromString:@"www.archerhardgoods.com"];
+
+    NSString *buttonUrl = [NSString stringWithFormat:@"http://pinterest.com/pin/create/button/?url=%@&media=%@&description=%@", protectedUrl, protectedPictureUrl, description];
 
     return buttonUrl;
 }
