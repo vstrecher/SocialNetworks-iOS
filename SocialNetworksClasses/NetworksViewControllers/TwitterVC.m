@@ -43,7 +43,7 @@
     self = [super init];
 
     webView = [[UIWebView alloc] init];
-    webView.frame = self.view.frame;
+    webView.frame = self.view.bounds;
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webView.delegate = self;
 
@@ -178,7 +178,7 @@
 {
     if (!webView.superview) {
 
-        webView.frame = self.view.frame;
+        webView.frame = self.view.bounds;
 
         if ([closeButton superview]) {
             [self.view insertSubview:webView belowSubview:closeButton];
