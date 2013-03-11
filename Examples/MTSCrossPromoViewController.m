@@ -63,9 +63,6 @@
     loadingLabel.textColor = [UIColor darkGrayColor];
     [loadingView addSubview:loadingLabel];
     [loadingLabel release];
-
-    [[SNCrossPromoDataLoader instance] startWithDelegate:self];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -75,7 +72,8 @@
 
     loadingView.center = self.view.center;
     [self.view addSubview:loadingView];
-
+    
+    [[SNCrossPromoDataLoader instance] startWithDelegate:self];
 }
 
 
