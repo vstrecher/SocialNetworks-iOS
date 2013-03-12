@@ -23,6 +23,16 @@
 
 }
 
+- (void)postMessage: (NSString *)aPost
+               link: (NSString *)aLink
+{
+    NSString *messageToPost = [NSString stringWithFormat: @"%@ %@",
+                                                          aPost,
+                                                          aLink];
+    [self postMessage: messageToPost];
+}
+
+
 - (void)postMessage:(NSString *)message
 {
     if ( self.fullVersion )

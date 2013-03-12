@@ -12,6 +12,10 @@
 @interface TwitterNetwork : SNSocialNetwork <TwitterDelegate>
 
 - (void)postMessage;
+
+- (void)postMessage: (NSString *)aPost
+               link: (NSString *)aLink;
+
 - (void)postMessage: (NSString *)message;
 
 @end
