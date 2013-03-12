@@ -15,6 +15,18 @@
 }
 
 - (void)postMessage;
+
+- (void)postMessage: (NSString *)fbPost
+               link: (NSString *)fbLink;
+
+- (void)postLink: (NSString *)fbLink
+         picture: (NSString *)fbPicture
+     messageName: (NSString *)fbName
+  messageCaption: (NSString *)fbCaption
+              post: (NSString *)fbPost
+messageDescription: (NSString *)fbDescription;
+
+
 - (BOOL)isLogged;
 - (void)login;
 - (void)logout;

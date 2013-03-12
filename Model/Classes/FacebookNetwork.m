@@ -10,30 +10,97 @@
 #import "SNDefines.h"
 #import "SNFastMessage.h"
 
+typedef void(^FacebookNetworkCompletionBlock_t)(NSError *error);
 
 @interface FacebookNetwork ()
-- (void)getFacebookInstance;
+@property (nonatomic, copy) FacebookNetworkCompletionBlock_t authorizeCompletion;
 
+- (void)getFacebookInstance;
 - (NSString *)sharingURL;
-- (void)sendToFacebook;
+- (void)sendToFacebookLink: (NSString *)fbLink
+                   picture: (NSString *)fbPicture
+               messageName: (NSString *)fbName
+            messageCaption: (NSString *)fbCaption
+                      post: (NSString *)fbPost
+        messageDescription: (NSString *)fbDescription;
+
 @end
 
 @implementation FacebookNetwork
 
-- (void)postMessage {
+- (void)postMessage
+{
+    [self postLink: self.link
+           picture: self.picture
+       messageName: self.messageName
+    messageCaption: self.messageCaption
+              post: self.post
+messageDescription: self.messageDescription];
+}
 
-    if ( self.fullVersion ) {
+- (void)postMessage: (NSString *)fbPost
+               link: (NSString *)fbLink
+{
+    [self postLink: fbLink
+           picture: self.picture
+       messageName: self.messageName
+    messageCaption: self.messageCaption
+              post: fbPost
+messageDescription: self.messageDescription];
+}
+
+- (void)postLink: (NSString *)fbLink
+         picture: (NSString *)fbPicture
+     messageName: (NSString *)fbName
+  messageCaption: (NSString *)fbCaption
+              post: (NSString *)fbPost
+messageDescription: (NSString *)fbDescription
+{
+    if ( self.fullVersion )
+    {
         [self getFacebookInstance];
 
-        if (![facebook isSessionValid]) {
-            [facebook authorize:[NSArray arrayWithObjects:@"publish_stream", nil]];
-        } else {
-            [self performSelector:@selector(sendToFacebook) withObject:nil afterDelay:0.1];
-        }
-    } else {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [self sharingURL], self.link]]];
+        [self _authorizeFBOnCompletion: ^(NSError *error)
+        {
+            if ( ! error )
+            {
+                dispatch_async(
+                        dispatch_get_main_queue(), ^
+                                                   {
+                                                       [self sendToFacebookLink: fbLink
+                                                                        picture: fbPicture
+                                                                    messageName: fbName
+                                                                 messageCaption: fbCaption
+                                                                           post: fbPost
+                                                             messageDescription: fbDescription];
+                                                   }
+                );
+            }
+        }];
     }
+    else
+    {
+        [[UIApplication sharedApplication] openURL: [NSURL URLWithString: [NSString stringWithFormat: @"%@%@",
+                                                                                                      [self sharingURL],
+                                                                                                      self.link]]];
+    }
+}
 
+- (void)_authorizeFBOnCompletion: (FacebookNetworkCompletionBlock_t)completion
+{
+    self.authorizeCompletion = completion;
+
+    if ( ! [facebook isSessionValid] )
+    {
+        [facebook authorize: [NSArray arrayWithObjects: @"publish_stream", nil]];
+    }
+    else
+    {
+        if ( self.authorizeCompletion )
+        {
+            self.authorizeCompletion(nil);
+        }
+    }
 }
 
 - (BOOL)isLogged {
@@ -88,28 +155,32 @@
     return @"http://facebook.com/sharer.php?u=";
 }
 
-- (void)sendToFacebook
+- (void)sendToFacebookLink: (NSString *)fbLink
+                   picture: (NSString *)fbPicture
+               messageName: (NSString *)fbName
+            messageCaption: (NSString *)fbCaption
+                      post: (NSString *)fbPost
+        messageDescription: (NSString *)fbDescription
 {
     Log(@"sending to facebook...");
 
-    NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-            self.link, @"link",
-            self.picture, @"picture",
-            self.messageName, @"name",
-            self.messageCaption, @"caption",
-            self.post, @"message",
-            self.messageDescription, @"description",
-            nil];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                               fbLink, @"link",
+                                                               fbPicture, @"picture",
+                                                               fbName, @"name",
+                                                               fbCaption, @"caption",
+                                                               fbPost, @"message",
+                                                               fbDescription, @"description",
+                                                               nil];
 
 
-    [facebook requestWithGraphPath:@"me/feed"
-                         andParams:params
-                     andHttpMethod:@"POST"
-                       andDelegate:self];
+    [facebook requestWithGraphPath: @"me/feed"
+                         andParams: params
+                     andHttpMethod: @"POST"
+                       andDelegate: self];
 
 //	[facebook dialog:@"feed" andParams:params andDelegate:self];
 }
-
 
 - (void)dealloc {
     [facebook release];
@@ -121,28 +192,37 @@
     Log(@"fbDidLogin");
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[facebook accessToken] forKey:kFBDefaultsAccessToken];
-    [defaults setObject:[facebook expirationDate] forKey:kFBDefaultsExpirationDate];
+    [defaults setObject: [facebook accessToken] forKey: kFBDefaultsAccessToken];
+    [defaults setObject: [facebook expirationDate] forKey: kFBDefaultsExpirationDate];
     [defaults synchronize];
 
-    if ( self.isLoginAction) {
-        [self setIsLoginAction:NO];
+    if ( self.isLoginAction )
+    {
+        [self setIsLoginAction: NO];
         [super loginDidSucceeded];
         return;
     }
 
-    [self sendToFacebook];
+    if ( self.authorizeCompletion )
+    {
+        self.authorizeCompletion(nil);
+    }
 }
 
 - (void)fbDidNotLogin:(BOOL)cancelled
 {
     Log(@"fbDidNotLogin");
 
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Ошибка", @"Ошибка")
-                                                        message:NSLocalizedString(@"Не удалось войти в Facebook.", @"Could not login to Facebook") delegate:nil
-                                              cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"Ошибка", @"Ошибка") message: NSLocalizedString(@"Не удалось войти в Facebook.", @"Could not login to Facebook") delegate: nil cancelButtonTitle: @"OK" otherButtonTitles: nil];
     [alertView show];
     [alertView release];
+
+    if ( self.authorizeCompletion )
+    {
+        self.authorizeCompletion(
+                [NSError errorWithDomain: @"FacebookNetworkError" code: 01 userInfo: @{NSLocalizedDescriptionKey : @"Unknown Error"}]
+        );
+    }
 
     [super loginDidFail];
 }
