@@ -23,4 +23,12 @@
 
 - (void)postMessage;
 
+- (void)postMessage: (NSString *)vkMessage
+               link: (NSString *)vkLink;
+
+- (void)postMessage: (NSString *)vkMessage
+               link: (NSString *)vkLink
+            picture: (NSString *)vkPicture;
+
+
 @end

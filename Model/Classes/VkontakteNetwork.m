@@ -12,9 +12,12 @@
 #import "JSONKit.h"
 #import "Macros.h"
 
+typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
+
 @interface VkontakteNetwork ()
 @property(nonatomic, assign) BOOL isCaptcha;
 @property(nonatomic, assign) BOOL isAuth;
+@property (nonatomic, copy) VKNetworkCompletionBlock_t authorizeCompletion;
 
 
 - (NSString *)sharingURL;
@@ -31,7 +34,6 @@
 
 - (void)sendUploadedImage:(NSString *)uploadedImage text:(NSString *)text link:(NSString *)aLink;
 
-
 - (void)sendImageData:(NSData *)imageData text:(NSString *)text;
 
 - (void)sendFailedWithError:(NSString *)error;
@@ -39,7 +41,6 @@
 - (void)sendSuccessWithMessage:(NSString *)message;
 
 - (NSString *)URLEncodedString:(NSString *)str;
-
 
 - (NSDictionary *)sendRequest:(NSString *)reqURl withCaptcha:(BOOL)captcha;
 
@@ -54,30 +55,86 @@
 @synthesize isCaptcha = _isCaptcha;
 @synthesize isAuth = _isAuth;
 
-- (void)postMessage {
-    if ( self.fullVersion ) {
-        [self setIsAuth:[self isAccessTokenValid]];
-        if ( self.isAuth ) {
-            if ( self.picture.length) {
-                if ([self.picture hasPrefix:@"photo"] ) {
-                    [self sendUploadedImage:self.picture text:self.post];
-                } else {
-                    [self sendImageData:UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:self.picture], 1.0) text:self.post];
+- (void)postMessage
+{
+    [self postMessage: self.post
+                 link: self.link
+              picture: self.picture];
+}
+
+- (void)postMessage: (NSString *)vkMessage
+               link: (NSString *)vkLink
+{
+    [self postMessage: vkMessage
+                 link: vkLink
+              picture: nil];
+}
+
+- (void)postMessage: (NSString *)vkMessage
+               link: (NSString *)vkLink
+            picture: (NSString *)vkPicture
+{
+    if ( self.fullVersion )
+    {
+        [self _authorizeVKOnCompletion: ^(NSError *error)
+        {
+            if ( ! error )
+            {
+                if ( vkPicture.length )
+                {
+                    if ( [vkPicture hasPrefix: @"photo"] )
+                    {
+                        [self sendUploadedImage: vkPicture
+                                           text: vkMessage];
+                    }
+                    else
+                    {
+                        [self sendImageData: UIImageJPEGRepresentation(
+                                [UIImage imageWithContentsOfFile: vkPicture], 1.0
+                        )
+                                       text: vkMessage];
+                    }
                 }
-            } else {
-                if ( self.link.length ) {
-                    [self sendText:self.post link:self.link];
-                } else {
-                    [self sendText:self.post];
+                else
+                {
+                    if ( vkLink.length )
+                    {
+                        [self sendText: vkMessage
+                                  link: vkLink];
+                    }
+                    else
+                    {
+                        [self sendText: vkMessage];
+                    }
                 }
             }
-        } else {
-            [self showAuthViewController];
-        }
-    } else {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [self sharingURL], self.link]]];
+        }];
     }
+    else
+    {
+        [[UIApplication sharedApplication] openURL: [NSURL URLWithString: [NSString stringWithFormat: @"%@%@",
+                                                                                                      [self sharingURL],
+                                                                                                      vkLink]]];
+    }
+}
 
+- (void)_authorizeVKOnCompletion: (VKNetworkCompletionBlock_t)completion
+{
+    self.authorizeCompletion = completion;
+
+    [self setIsAuth: [self isAccessTokenValid]];
+
+    if ( self.isAuth )
+    {
+        if ( self.authorizeCompletion )
+        {
+            self.authorizeCompletion(nil);
+        }
+    }
+    else
+    {
+        [self showAuthViewController];
+    }
 }
 
 - (NSString *)sharingURL {
@@ -233,7 +290,11 @@
     if( errorMsg || !result ) {
         if ( errorCode == 5 ) {
             [self clearToken];
-            [self postMessage];
+
+            // Retrying
+            [self postMessage: text
+                         link: aLink
+                      picture: uploadedImage];
         } else {
             [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
         }
@@ -433,19 +494,35 @@
 
 - (void)vk:(VkontakteVC *)viewController completedAuthenticationWithStatus:(BOOL)isSuccessful {
     [self hideAuthViewController];
-    [self setIsAuth:isSuccessful];
+    [self setIsAuth: isSuccessful];
 
-    if ( isSuccessful ) {
+    if ( isSuccessful )
+    {
 
-        if ( self.isLoginAction ) {
-            [self setIsLoginAction:NO];
+        if ( self.isLoginAction )
+        {
+            [self setIsLoginAction: NO];
             [super loginDidSucceeded];
             return;
         }
 
-        [self postMessage];
+        if ( self.authorizeCompletion )
+        {
+            self.authorizeCompletion(nil);
+        }
 
-    } else {
+    }
+    else
+    {
+
+        if ( self.authorizeCompletion )
+        {
+            self.authorizeCompletion(
+                    [NSError errorWithDomain: @"VkontakteNetworkDomain"
+                                        code: 01
+                                    userInfo: @{NSLocalizedDescriptionKey : @"Unknown Error"}]
+            );
+        }
 
         [super loginDidFail];
 
