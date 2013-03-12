@@ -130,4 +130,11 @@ static BOOL _presentWithNotification = NO;
     return network;
 }
 
+- (void)postMessage: (NSString *)aPost
+               link: (NSString *)aLink
+{
+    NSLog(@"Posting to %@: %@ %@", self.type, aPost, aLink);
+}
+
+
 @end

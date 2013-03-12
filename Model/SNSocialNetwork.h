@@ -61,6 +61,8 @@
 + (TwitterNetwork *)twitterNetwork;
 + (EmailNetwork *)emailNetwork;
 
+- (void)postMessage: (NSString *)aPost
+               link: (NSString *)aLink;
 - (void)postMessage;
 - (BOOL)isLogged;
 - (void)login;
