@@ -46,7 +46,12 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
 
-    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    NSString* version = [[UIDevice currentDevice] systemVersion];
+    if([version floatValue] < 6.0) {
+        self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.view.backgroundColor = [UIColor colorWithRed:215.0/255.0 green:217.0/255.0 blue:223.0/255.0 alpha:1.0];
+    }
 
     loadingView.frame = CGRectMake(0, 0, 120, 20);
     loadingView.backgroundColor = [UIColor clearColor];
