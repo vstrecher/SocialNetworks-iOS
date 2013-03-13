@@ -23,11 +23,26 @@
 
 }
 
+- (NSString *)_clipString: (NSString *)string
+                       to: (NSInteger)maxLength
+{
+    if ( string.length <= maxLength )
+    {
+        return string;
+    }
+
+    return [string substringWithRange: NSMakeRange(0, maxLength)];
+}
+
 - (void)postMessage: (NSString *)aPost
                link: (NSString *)aLink
 {
+
+    NSString *clippedPost = [self _clipString: aPost
+                                           to: 100];
+
     NSString *messageToPost = [NSString stringWithFormat: @"%@ %@",
-                                                          aPost,
+                                                          clippedPost,
                                                           aLink];
     [self postMessage: messageToPost];
 }
