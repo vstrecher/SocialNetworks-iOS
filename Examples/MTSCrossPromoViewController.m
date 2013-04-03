@@ -89,6 +89,7 @@
 }
 
 - (void)dealloc {
+    [SNCrossPromoDataLoader instance].dataDelegate = nil;
     [loadingView release];
     [mainTableView release];
     [super dealloc];
