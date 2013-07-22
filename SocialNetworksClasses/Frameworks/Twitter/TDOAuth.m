@@ -109,7 +109,7 @@ static NSString* timestamp() {
     time_t t;
     time(&t);
     mktime(gmtime(&t));
-    return [NSString stringWithFormat:@"%u", t + TDOAuthUTCTimeOffset];
+    return [NSString stringWithFormat:@"%lu", t + TDOAuthUTCTimeOffset];
 }
 
 

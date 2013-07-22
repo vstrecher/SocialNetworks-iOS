@@ -6,7 +6,9 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+#ifndef Log
 #define Log(fmt, ...) NSLog((@"%s %d: " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#endif
 
 // Socials Config XML Defines
 #define APP_DELEGATE_CONFIG_XML_PATH_PROPERTY_NAME @"pathForSocialSharingConfigXML"

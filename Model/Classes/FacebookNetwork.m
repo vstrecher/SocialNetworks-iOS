@@ -137,7 +137,7 @@ messageDescription: (NSString *)fbDescription
 }
 
 - (void)getFacebookInstance {
-    id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
+    NSObject<UIApplicationDelegate> *appDelegate = [[UIApplication sharedApplication] delegate];
     facebook = [appDelegate valueForKey:@"facebook"];
     if ( ! facebook ) {
         facebook = [[Facebook alloc] initWithAppId:self.token andDelegate:self];
