@@ -7,9 +7,8 @@
 //
 
 #import "../SNSocialNetwork.h"
-#import "TwitterVC.h"
 
-@interface TwitterNetwork : SNSocialNetwork <TwitterDelegate>
+@interface TwitterNetwork : SNSocialNetwork
 
 - (void)postMessage;
 
