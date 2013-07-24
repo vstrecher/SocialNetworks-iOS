@@ -7,6 +7,7 @@
 //
 
 #import "SNFastMessage.h"
+#import "SNDefines.h"
 
 @implementation SNFastMessage
 
@@ -24,4 +25,24 @@
     [alertView show];
     [alertView release];
 }
+
++ (NSString*) localizedToken: (NSString *) tokenKey defaultValue: (NSString *) defaultValue {
+    NSString *result = nil;
+    
+    @try {
+        if([[UIApplication sharedApplication].delegate respondsToSelector: NSSelectorFromString(APP_DELEGATE_TOKEN_FOR_SN)] == YES) {
+            result = [[UIApplication sharedApplication].delegate performSelector: NSSelectorFromString(APP_DELEGATE_TOKEN_FOR_SN) withObject: tokenKey];
+        }
+        if(result == nil) {
+            result = NSLocalizedString(defaultValue, defaultValue);
+        }
+    }
+    @catch (NSException *exception) {
+        Log(@"Exception when recive localize token : %@", exception);
+    }
+    
+    
+    return result;
+}
+
 @end

@@ -12,6 +12,8 @@
 
 // Socials Config XML Defines
 #define APP_DELEGATE_CONFIG_XML_PATH_PROPERTY_NAME @"pathForSocialSharingConfigXML"
+// need for localize token from framework
+#define APP_DELEGATE_TOKEN_FOR_SN @"tokenForSocialNetwork:"
 #define CONFIG_FILE_NAME @"SocialsConfig"
 #define CONFIG_FILE_EXTENSION @"xml"
 #define CONFIG_EMAIL_TYPE @"Email"
@@ -73,3 +75,6 @@
 // FB
 #define kFBDefaultsAccessToken @"FBAccessTokenKey"
 #define kFBDefaultsExpirationDate @"FBExpirationDateKey"
+
+// Localization
+#define SN_T(key, string) [SNFastMessage localizedToken: (key) defaultValue: (string)]

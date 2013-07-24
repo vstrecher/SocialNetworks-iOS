@@ -11,6 +11,7 @@
 #import "SNDefines.h"
 #import "JSONKit.h"
 #import "Macros.h"
+#import "SNFastMessage.h"
 
 typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
 
@@ -174,7 +175,7 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kVKDefaultsUserId];
         [[NSUserDefaults standardUserDefaults] synchronize];
 
-        [self sendSuccessWithMessage:NSLocalizedString(@"Вы успешно вышли из сети.", @"Вы успешно вышли из сети.")];
+        [self sendSuccessWithMessage: SN_T(@"kSNSuccessLogoutTag", @"Вы успешно вышли из сети.")];
         [super logoutDidSucceeded];
     }
 }
@@ -296,10 +297,10 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
                          link: aLink
                       picture: uploadedImage];
         } else {
-            [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
+            [self sendFailedWithError: SN_T(@"kSNFailPublishTag", @"Не удалось опубликовать запись.")];
         }
     } else {
-        [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
+        [self sendSuccessWithMessage:SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
     }
 
     [attachments release];
@@ -328,9 +329,9 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
 
     NSString *errorMsg = [[postToWallDict  objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
     if(errorMsg) {
-        [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
+        [self sendFailedWithError: SN_T(@"kSNFailPublishTag", @"Не удалось опубликовать запись.")];
     } else {
-        [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
+        [self sendSuccessWithMessage: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
     }
 }
 
@@ -338,17 +339,13 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
     if ( self.isCaptcha ) {
         return;
     }
-    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Ошибка", @"Ошибка")
-                                                          message:error delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-    [myAlertView show];
-    [myAlertView release];
+    
+    [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNAlertViewErrorTitle", @"Ошибка") message: error];
 }
 
 - (void) sendSuccessWithMessage:(NSString *)message {
-    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ВКонтакте", @"ВКонтакте")
-                                                          message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-    [myAlertView show];
-    [myAlertView release];
+    
+    [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNVkontakteTitle", @"ВКонтакте") message: message];
 }
 
 - (NSString *)URLEncodedString:(NSString *)str
@@ -448,9 +445,11 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
 
 - (void) getCaptcha {
     NSString *captcha_img = [[NSUserDefaults standardUserDefaults] objectForKey:kVKCaptchaImgKey];
-    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"Введите код с картинки:\n\n\n\n\n"
-                                                          message:@"\n" delegate:self cancelButtonTitle:NSLocalizedString(@"Отмена", @"Отмена")
-                                                                                      otherButtonTitles:NSLocalizedString(@"Ок", @"Ок"), nil];
+    NSString *captchaTitle = SN_T(@"kSNEnterCaptchaCodeTag", @"Введите код с картинки");
+    
+    UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle: [captchaTitle stringByAppendingString: @":\n\n\n\n\n"]
+                                                          message:@"\n" delegate:self cancelButtonTitle:SN_T(@"kSNCancelTitle", @"Отмена")
+                                                                                      otherButtonTitles: SN_T(@"kSNOkTitle", @"Ок"), nil];
 
     UIImageView *imageView = [[[UIImageView alloc] initWithFrame:CGRectMake(12.0, 45.0, 130.0, 50.0)] autorelease];
     imageView.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:captcha_img]]];
@@ -483,9 +482,9 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
         NSDictionary *newRequestDict =[self sendRequest:request withCaptcha:YES];
         NSString *errorMsg = [[newRequestDict  objectForKey:kVKErrorKey] objectForKey:kVKErrorMsgKey];
         if(errorMsg) {
-            [self sendFailedWithError:NSLocalizedString(@"Не удалось опубликовать запись.", @"Не удалось опубликовать запись.")];
+            [self sendFailedWithError: SN_T(@"kSNFailPublishTag", @"Не удалось опубликовать запись.")];
         } else {
-            [self sendSuccessWithMessage:NSLocalizedString(@"Запись успешно опубликована!", @"Запись успешно опубликована!")];
+            [self sendSuccessWithMessage: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
         }
     }
 }

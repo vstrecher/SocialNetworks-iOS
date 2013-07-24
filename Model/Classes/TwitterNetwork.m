@@ -9,6 +9,8 @@
 #import "TwitterNetwork.h"
 #import "SNFastMessage.h"
 #import "SNDefines.h"
+#import <Twitter/Twitter.h>
+#import <Accounts/Accounts.h>
 
 @interface TwitterNetwork ()
 - (NSString *)sharingURL;
@@ -50,24 +52,72 @@
 
 - (void)postMessage:(NSString *)message
 {
+    NSDictionary *params;
+    ACAccountStore *accountStore;
+    ACAccountType *twitterAccountType;
+    NSArray *twitterAccounts;
+    TWRequest *postRequest;
+    NSURL *requestURL;
+    
     if ( self.fullVersion )
     {
-        TwitterVC *twitterVC = [[TwitterVC alloc] init];
-        twitterVC.delegate = self;
-        twitterVC.consumerKey = self.token;
-        twitterVC.consumerSecret = self.secret;
-
-        [twitterVC sendMessage: message];
-
-        if ( ! [twitterVC hasSession] )
-        {
-            twitterVC.modalPresentationStyle = UIModalPresentationPageSheet;
-            NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] initWithObjectsAndKeys: twitterVC, NOTIFICATION_VIEW_CONTROLLER, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName: SHOW_MODAL_VIEW_CONTROLLER_NOTIFICATION object: nil userInfo: userInfo];
-            [userInfo release];
+        params = @{@"status": message};
+        
+        requestURL = [NSURL URLWithString: [self twitterApiURL]];
+        
+        accountStore = [[[ACAccountStore alloc] init] autorelease];
+        
+        twitterAccountType = [accountStore accountTypeWithAccountTypeIdentifier: ACAccountTypeIdentifierTwitter];
+        
+        twitterAccounts = [accountStore accountsWithAccountType:twitterAccountType];
+        
+        postRequest = [[[TWRequest alloc]initWithURL: requestURL parameters: params requestMethod: TWRequestMethodPOST] autorelease];
+        
+        if([TWTweetComposeViewController canSendTweet] == YES) {
+            postRequest.account = [twitterAccounts lastObject];
+            
+            [postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+                NSError *jsonError;
+                NSDictionary *responceJson, *responceError;
+                NSArray *responceErrors;
+                NSString *errorMessage;
+                BOOL successSend = NO;
+                
+                @try {
+                    if(error == nil) {
+                        responceJson = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&jsonError];
+                        
+                        Log(@"Responce from twitter api: [%@]", responceJson);
+                        
+                        responceErrors = [responceJson objectForKey: @"errors"];
+                        responceError = responceErrors.lastObject;
+                        errorMessage = [responceError objectForKey: @"message"];
+                        
+                        if(errorMessage == nil) {
+                            successSend = YES;
+                        }
+                        else {
+                            [self tweetFailedWithError: [NSError errorWithDomain: errorMessage code:0 userInfo:nil]];
+                        }
+                    }
+                    else {
+                        [self tweetFailedWithError: error];
+                    }
+                    
+                    if(successSend == YES) {
+                        [self tweetSent];
+                    }
+                }
+                @catch (NSException *exception) {
+                    Log(@"Exception when process twitter responce : %@", exception);
+                    [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
+                }
+            }];
         }
-
-        [twitterVC release];
+        else {
+            Log(@"Twitter account not set");
+            [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNTwitterAccountNotSetTag", @"Не настроен не один аккаунт в twitter") code:0 userInfo:nil]];
+        }
     }
     else
     {
@@ -77,6 +127,10 @@
     }
 }
 
+- (NSString *) twitterApiURL {
+    return @"http://api.twitter.com/1.1/statuses/update.json";
+}
+
 - (NSString *)sharingURL {
     return @"https://twitter.com/share?url=";
 }
@@ -84,16 +138,19 @@
 #pragma mark - TwitterVC Delegate
 
 - (void)tweetSent {
-    [[NSNotificationCenter defaultCenter] postNotificationName:HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil];
     Log(@"twit sent");
-    [SNFastMessage showFastMessageWithTitle:@"Twitter" message:@"Запись успешно опубликована!"];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNTwitterTitle", @"Twitter") message: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
+    });
 }
 
 - (void)tweetFailedWithError:(NSError *)error {
-    [[NSNotificationCenter defaultCenter] postNotificationName:HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil];
     Log(@"twit failed: %@", error);
-    [SNFastMessage showFastMessageWithTitle:@"Error" message:[error localizedDescription]];
-
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+         [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNAlertViewErrorTitle", @"Ошибка") message:[error domain]];
+    });
 }
 
 - (void)tweetCancel {

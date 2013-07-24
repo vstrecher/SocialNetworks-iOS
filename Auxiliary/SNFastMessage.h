@@ -16,4 +16,6 @@
 
 + (void)showFastMessageWithTitle:(NSString *)title message:(NSString *)message delegate:(id)delegate;
 
++ (NSString*) localizedToken: (NSString *) tokenKey defaultValue: (NSString *) defaultValue;
+
 @end
