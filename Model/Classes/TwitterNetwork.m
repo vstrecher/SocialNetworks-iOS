@@ -55,8 +55,6 @@
     NSDictionary *params;
     ACAccountStore *accountStore;
     ACAccountType *twitterAccountType;
-    NSArray *twitterAccounts;
-    TWRequest *postRequest;
     NSURL *requestURL;
     
     if ( self.fullVersion )
@@ -69,55 +67,66 @@
         
         twitterAccountType = [accountStore accountTypeWithAccountTypeIdentifier: ACAccountTypeIdentifierTwitter];
         
-        twitterAccounts = [accountStore accountsWithAccountType:twitterAccountType];
-        
-        postRequest = [[[TWRequest alloc]initWithURL: requestURL parameters: params requestMethod: TWRequestMethodPOST] autorelease];
-        
-        if([TWTweetComposeViewController canSendTweet] == YES) {
-            postRequest.account = [twitterAccounts lastObject];
-            
-            [postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-                NSError *jsonError;
-                NSDictionary *responceJson, *responceError;
-                NSArray *responceErrors;
-                NSString *errorMessage;
-                BOOL successSend = NO;
+        [accountStore requestAccessToAccountsWithType:twitterAccountType
+                         withCompletionHandler:^(BOOL granted, NSError *error) {
+            NSArray *twitterAccounts;
+            TWRequest *postRequest;
+                             
+            if (granted) {
+                twitterAccounts = [accountStore accountsWithAccountType:twitterAccountType];
                 
-                @try {
-                    if(error == nil) {
-                        responceJson = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&jsonError];
-                        
-                        Log(@"Responce from twitter api: [%@]", responceJson);
-                        
-                        responceErrors = [responceJson objectForKey: @"errors"];
-                        responceError = responceErrors.lastObject;
-                        errorMessage = [responceError objectForKey: @"message"];
-                        
-                        if(errorMessage == nil) {
-                            successSend = YES;
-                        }
-                        else {
-                            [self tweetFailedWithError: [NSError errorWithDomain: errorMessage code:0 userInfo:nil]];
-                        }
-                    }
-                    else {
-                        [self tweetFailedWithError: error];
-                    }
+                postRequest = [[[TWRequest alloc]initWithURL: requestURL parameters: params requestMethod: TWRequestMethodPOST] autorelease];
+                
+                if([TWTweetComposeViewController canSendTweet] == YES) {
+                    postRequest.account = [twitterAccounts lastObject];
                     
-                    if(successSend == YES) {
-                        [self tweetSent];
-                    }
+                    [postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+                        NSError *jsonError;
+                        NSDictionary *responceJson, *responceError;
+                        NSArray *responceErrors;
+                        NSString *errorMessage;
+                        BOOL successSend = NO;
+                        
+                        @try {
+                            if(error == nil) {
+                                responceJson = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&jsonError];
+                                
+                                Log(@"Responce from twitter api: [%@]", responceJson);
+                                
+                                responceErrors = [responceJson objectForKey: @"errors"];
+                                responceError = responceErrors.lastObject;
+                                errorMessage = [responceError objectForKey: @"message"];
+                                
+                                if(errorMessage == nil) {
+                                    successSend = YES;
+                                }
+                                else {
+                                    [self tweetFailedWithError: [NSError errorWithDomain: errorMessage code:0 userInfo:nil]];
+                                }
+                            }
+                            else {
+                                [self tweetFailedWithError: error];
+                            }
+                            
+                            if(successSend == YES) {
+                                [self tweetSent];
+                            }
+                        }
+                        @catch (NSException *exception) {
+                            Log(@"Exception when process twitter responce : %@", exception);
+                            [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
+                        }
+                    }];
                 }
-                @catch (NSException *exception) {
-                    Log(@"Exception when process twitter responce : %@", exception);
-                    [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
+                else {
+                    Log(@"Twitter account not set");
+                    [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNTwitterAccountNotSetTag", @"Не настроен не один аккаунт в twitter") code:0 userInfo:nil]];
                 }
-            }];
-        }
-        else {
-            Log(@"Twitter account not set");
-            [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNTwitterAccountNotSetTag", @"Не настроен не один аккаунт в twitter") code:0 userInfo:nil]];
-        }
+            }
+            else {
+                [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNTwitterAccountAccessFailTag", @"Ошибка доступа к аккаунтам twitter") code:0 userInfo:nil]];
+            }
+        }];
     }
     else
     {
