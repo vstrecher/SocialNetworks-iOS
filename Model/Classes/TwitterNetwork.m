@@ -39,13 +39,22 @@
 - (void)postMessage: (NSString *)aPost
                link: (NSString *)aLink
 {
+    NSString *clippedPost;
+    NSMutableString *messageToPost;
+    NSInteger linkLenth = 0;
+    
+    if(aLink != nil) {
+        linkLenth = aLink.length + 1;
+    }
+    
+    clippedPost = [self _clipString: aPost to: MIN(140, aPost.length + linkLenth) - MIN(140, linkLenth)];
 
-    NSString *clippedPost = [self _clipString: aPost
-                                           to: 100];
-
-    NSString *messageToPost = [NSString stringWithFormat: @"%@ %@",
-                                                          clippedPost,
-                                                          aLink];
+    messageToPost = [NSMutableString stringWithFormat: @"%@", clippedPost];
+    
+    if(aLink != nil) {
+        [messageToPost appendFormat: @" %@", aLink];
+    }
+    
     [self postMessage: messageToPost];
 }
 
