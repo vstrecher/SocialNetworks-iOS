@@ -346,6 +346,10 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
 - (void) sendSuccessWithMessage:(NSString *)message {
     
     [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNVkontakteTitle", @"ВКонтакте") message: message];
+    
+    if([self.delegate respondsToSelector: @selector(postMessageSucceeded:)] == YES) {
+        [self.delegate postMessageSucceeded: self];
+    }
 }
 
 - (NSString *)URLEncodedString:(NSString *)str

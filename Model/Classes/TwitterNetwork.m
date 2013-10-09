@@ -161,6 +161,10 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNTwitterTitle", @"Twitter") message: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
     });
+    
+    if([self.delegate respondsToSelector: @selector(postMessageSucceeded:)] == YES) {
+        [self.delegate postMessageSucceeded: self];
+    }
 }
 
 - (void)tweetFailedWithError:(NSError *)error {

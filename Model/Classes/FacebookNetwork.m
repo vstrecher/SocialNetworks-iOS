@@ -249,6 +249,10 @@ messageDescription: (NSString *)fbDescription
 
     [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNFacebookTitle", @"Facebook")
                                     message: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
+    
+    if([self.delegate respondsToSelector: @selector(postMessageSucceeded:)] == YES) {
+        [self.delegate postMessageSucceeded: self];
+    }
 }
 
 - (void)request:(FBRequest *)request didFailWithError:(NSError *)error

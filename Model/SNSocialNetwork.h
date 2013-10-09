@@ -12,6 +12,13 @@
 @class VkontakteNetwork;
 @class TwitterNetwork;
 @class EmailNetwork;
+@class SNSocialNetwork;
+
+@protocol SNSocialNetworkDelegate <NSObject>
+
+- (void) postMessageSucceeded: (SNSocialNetwork *) snSocialNetwork;
+
+@end
 
 @interface SNSocialNetwork : NSObject {
 @protected
@@ -48,6 +55,8 @@
 @property(nonatomic, assign) BOOL isLoginAction;
 @property(nonatomic, copy) NSString *type;
 @property(nonatomic, copy) NSString *permissions;
+
+@property(nonatomic, assign) id <SNSocialNetworkDelegate> delegate;
 
 
 + (void)setPresentWithNotification:(BOOL)withNotification;
