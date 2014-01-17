@@ -220,7 +220,7 @@
 }
 
 - (NSString *) twitterApiURL {
-    return @"http://api.twitter.com/1.1/statuses/update.json";
+    return @"https://api.twitter.com/1.1/statuses/update.json";
 }
 
 - (NSString *)sharingURL {
