@@ -41,7 +41,7 @@
     PinterestVC *pinterestVC = [[PinterestVC alloc] init];
     [pinterestVC setOpenURL:[self generatePinterestURL]];
     [pinterestVC setModalPresentationStyle:UIModalPresentationPageSheet];
-    [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentModalViewController:pinterestVC animated:YES];
+    [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController: pinterestVC animated: YES completion: nil];
 
     [pinterestVC release];
 }

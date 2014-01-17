@@ -201,7 +201,7 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
         NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:vkontakteVC, NOTIFICATION_VIEW_CONTROLLER, nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:SHOW_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil userInfo:info];
     } else {
-        [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentModalViewController:vkontakteVC animated:YES];
+        [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController: vkontakteVC animated: YES completion: nil];
     }
     [vkontakteVC release];
 }
@@ -210,7 +210,7 @@ typedef void(^VKNetworkCompletionBlock_t)(NSError *error);
     if ( [SNSocialNetwork presentWithNotification] ) {
         [[NSNotificationCenter defaultCenter] postNotificationName:HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil userInfo:nil];
     } else {
-        [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissModalViewControllerAnimated:NO];
+        [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissViewControllerAnimated: NO completion: nil];
     }
 }
 

@@ -55,7 +55,7 @@
 #pragma mark - Interactions
 
 - (void)dismissButtonDidClick:(id)sender {
-    [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissModalViewControllerAnimated:YES];
+    [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissViewControllerAnimated: YES completion: nil];
 }
 
 #pragma mark - Getters / Setters
