@@ -83,7 +83,7 @@ messageDescription: (NSString *)fbDescription
         };
 
         options = @{
-                ACFacebookAppIdKey: self.secret,
+                ACFacebookAppIdKey: self.token,
                 ACFacebookPermissionsKey: @[@"publish_stream"],
                 ACFacebookAudienceKey: ACFacebookAudienceFriends
         };
