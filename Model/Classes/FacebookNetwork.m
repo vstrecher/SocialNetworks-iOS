@@ -6,23 +6,33 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+#import <Accounts/Accounts.h>
+#import <Social/Social.h>
 #import "FacebookNetwork.h"
 #import "SNDefines.h"
 #import "SNFastMessage.h"
 
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 60000
+
 typedef void(^FacebookNetworkCompletionBlock_t)(NSError *error);
 
-@interface FacebookNetwork ()
+@interface FacebookNetwork () <FBSessionDelegate, FBDialogDelegate, FBRequestDelegate>
 @property (nonatomic, copy) FacebookNetworkCompletionBlock_t authorizeCompletion;
-
 - (void)getFacebookInstance;
-- (NSString *)sharingURL;
 - (void)sendToFacebookLink: (NSString *)fbLink
                    picture: (NSString *)fbPicture
                messageName: (NSString *)fbName
             messageCaption: (NSString *)fbCaption
                       post: (NSString *)fbPost
         messageDescription: (NSString *)fbDescription;
+
+@end
+#endif
+
+@interface FacebookNetwork ()
+
+- (NSString *)sharingURL;
 
 @end
 
@@ -48,6 +58,109 @@ messageDescription: self.messageDescription];
               post: fbPost
 messageDescription: self.messageDescription];
 }
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
+
+- (void)postLink: (NSString *)fbLink
+         picture: (NSString *)fbPicture
+     messageName: (NSString *)fbName
+  messageCaption: (NSString *)fbCaption
+              post: (NSString *)fbPost
+messageDescription: (NSString *)fbDescription
+{
+    NSDictionary *params;
+    NSDictionary *options;
+
+    if ( self.fullVersion )
+    {
+        params = @{
+                @"link": fbLink,
+                @"message" : fbPost,
+                @"picture" : fbPicture,
+                @"name" : fbName,
+                @"caption" : fbCaption,
+                @"description" : fbDescription
+        };
+
+        options = @{
+                ACFacebookAppIdKey: self.secret,
+                ACFacebookPermissionsKey: @[@"publish_stream"],
+                ACFacebookAudienceKey: ACFacebookAudienceFriends
+        };
+
+        [self postSLRequestWithParams: params options: options typeIdentifier: ACAccountTypeIdentifierFacebook serviceType: SLServiceTypeFacebook];
+
+    }
+    else
+    {
+        [[UIApplication sharedApplication] openURL: [NSURL URLWithString: [NSString stringWithFormat: @"%@%@",
+                                                                                                      [self sharingURL],
+                                                                                                      self.link]]];
+    }
+}
+
+- (NSString *) apiURL {
+    return @"https://graph.facebook.com/me/feed";
+}
+
+- (void) processResponse: (NSData *) responseData urlResponse: (NSHTTPURLResponse *)urlResponse error: (NSError *) error {
+    NSError *jsonError;
+    NSDictionary *responseJson, *responseError;
+    NSArray *responseErrors;
+    NSString *errorMessage = nil;
+    BOOL successSend = NO;
+
+    @try {
+
+        if(error == nil) {
+            responseJson = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&jsonError];
+
+            Log(@"Responce from [%@] api: [%@]", self.apiURL, responseJson);
+
+            /*
+            if(responseJson != nil) {
+                responseErrors = [responseJson objectForKey: @"errors"];
+                responseError = responseErrors.lastObject;
+                errorMessage = [responseError objectForKey: @"message"];
+
+                if(errorMessage == nil) {
+                    successSend = YES;
+                }
+                else {
+                    [self slRequestFailedWithError: [NSError errorWithDomain: errorMessage code:0 userInfo:nil]];
+                }
+            }
+            else {
+                [self slRequestFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
+            */
+        }
+        else {
+            [self slRequestFailedWithError: error];
+        }
+
+        if(successSend) {
+            [self slRequestSent];
+        }
+    }
+    @catch (NSException *exception) {
+        Log(@"Exception when process twitter responce : %@", exception);
+        [self slRequestFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
+    }
+}
+
+- (void) slRequestSent {
+    Log(@"%@ request sent", self.type);
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNFacebookTitle", @"Facebook") message: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
+    });
+
+    if([self.delegate respondsToSelector: @selector(postMessageSucceeded:)]) {
+        [self.delegate postMessageSucceeded: self];
+    }
+}
+
+#else
 
 - (void)postLink: (NSString *)fbLink
          picture: (NSString *)fbPicture
@@ -85,6 +198,8 @@ messageDescription: (NSString *)fbDescription
                                                                                                       self.link]]];
     }
 }
+
+//#endif
 
 - (void)_authorizeFBOnCompletion: (FacebookNetworkCompletionBlock_t)completion
 {
@@ -151,10 +266,6 @@ messageDescription: (NSString *)fbDescription
     }
 }
 
-- (NSString *)sharingURL {
-    return @"http://facebook.com/sharer.php?u=";
-}
-
 - (void)sendToFacebookLink: (NSString *)fbLink
                    picture: (NSString *)fbPicture
                messageName: (NSString *)fbName
@@ -212,7 +323,7 @@ messageDescription: (NSString *)fbDescription
 - (void)fbDidNotLogin:(BOOL)cancelled
 {
     Log(@"fbDidNotLogin");
-    
+
     [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNAlertViewErrorTitle", @"Ошибка")
                                     message: SN_T(@"kSNCannotLoginFacebookTag", @"Не удалось войти в Facebook.")];
 
@@ -237,7 +348,7 @@ messageDescription: (NSString *)fbDescription
 - (void)fbDidLogout
 {
     Log(@"fbDidLogout");
-    
+
     [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNFacebookTitle", @"Facebook")
                                     message: SN_T(@"kSNSuccessLogoutTag", @"Вы успешно вышли из сети.")];
     [super logoutDidSucceeded];
@@ -249,7 +360,7 @@ messageDescription: (NSString *)fbDescription
 
     [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNFacebookTitle", @"Facebook")
                                     message: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
-    
+
     if([self.delegate respondsToSelector: @selector(postMessageSucceeded:)] == YES) {
         [self.delegate postMessageSucceeded: self];
     }
@@ -264,7 +375,7 @@ messageDescription: (NSString *)fbDescription
         [facebook authorize:[NSArray arrayWithObjects:@"publish_stream", nil]];
     } else {
         Log(@"%@", error.localizedDescription);
-        
+
         [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNAlertViewErrorTitle", @"Ошибка")
                                         message: SN_T(@"kSNFailPublishTag", @"Не удалось опубликовать запись.")];
     }
@@ -280,7 +391,7 @@ messageDescription: (NSString *)fbDescription
     Log(@"<FBDialogDelegate>.dialogDidCompleteWithURL: %@", url);
 
     if ([url.absoluteString rangeOfString:@"post_id="].location != NSNotFound) {
-        
+
         [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNFacebookTitle", @"Facebook")
                                         message: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
     }
@@ -302,9 +413,16 @@ messageDescription: (NSString *)fbDescription
     Log(@"<FBDialogDelegate>.didFailWithError: %@", dialog);
 
     Log(@"%@", error.localizedDescription);
-    
+
     [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNAlertViewErrorTitle", @"Ошибка")
                                     message: SN_T(@"kSNFailPublishTag", @"Не удалось опубликовать запись.")];
 }
+
+#endif
+
+- (NSString *)sharingURL {
+    return @"http://facebook.com/sharer.php?u=";
+}
+
 
 @end

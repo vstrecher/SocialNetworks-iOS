@@ -81,5 +81,17 @@
 - (void)logoutDidSucceeded;
 - (void)logoutDidFail;
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
+
+- (void)postSLRequestWithParams: (NSDictionary *)params
+                        options: (NSDictionary *)options
+                 typeIdentifier: (NSString *) typeIdentifier
+                    serviceType: (NSString *) serviceType;
+- (NSString *) apiURL;
+- (void) processResponse: (NSData *) responseData urlResponse: (NSHTTPURLResponse *)urlResponse error: (NSError *) error;
+- (void) slRequestSent;
+- (void) slRequestFailedWithError:(NSError *)error;
+
+#endif
 
 @end

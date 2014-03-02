@@ -9,7 +9,7 @@
 #import "../SNSocialNetwork.h"
 #import "FBConnect.h"
 
-@interface FacebookNetwork : SNSocialNetwork <FBSessionDelegate, FBDialogDelegate, FBRequestDelegate> {
+@interface FacebookNetwork : SNSocialNetwork  {
 @private
     Facebook *facebook;
 }
@@ -26,9 +26,10 @@
               post: (NSString *)fbPost
 messageDescription: (NSString *)fbDescription;
 
-
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 60000
 - (BOOL)isLogged;
 - (void)login;
 - (void)logout;
+#endif
 
 @end

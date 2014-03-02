@@ -79,7 +79,7 @@
     {
         params = @{@"status": message};
         
-        requestURL = [NSURL URLWithString: [self twitterApiURL]];
+        requestURL = [NSURL URLWithString: [self apiURL]];
         
         accountStore = [[[ACAccountStore alloc] init] autorelease];
         
@@ -99,16 +99,21 @@
                                             postRequest.account = [twitterAccounts lastObject];
                                             
                                             [postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-                                                [self processResponce: responseData urlResponse: urlResponse error: error];
+                                                [self processResponse: responseData urlResponse: urlResponse error: error];
                                             }];
                                         }
                                         else {
-                                            Log(@"Twitter account not set");
-                                            [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNTwitterAccountNotSetTag", @"Не настроен не один аккаунт в twitter") code:0 userInfo:nil]];
+                                            Log(@"SL account not set");
+                                            [self slRequestFailedWithError:
+                                                    [NSError errorWithDomain:
+                                                            [NSString stringWithFormat: SN_T(@"kSNSLAccountNotSetTag", @"Не настроен не один аккаунт в %@"), self.type]  code:0 userInfo:nil]];
                                         }
                                     }
                                     else {
-                                        [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNTwitterAccountAccessFailTag", @"Ошибка доступа к аккаунтам twitter") code:0 userInfo:nil]];
+                                        Log(@"SL account access error");
+                                        [self slRequestFailedWithError:
+                                                [NSError errorWithDomain:
+                                                        [NSString stringWithFormat: SN_T(@"kSNSLAccountAccessFailTag", @"Ошибка доступа к аккаунтам %@"), self.type] code:0 userInfo:nil]];
                                     }
                                 }];
     }
@@ -125,55 +130,22 @@
 - (void)postMessage:(NSString *)message
 {
     NSDictionary *params;
-    ACAccountStore *accountStore;
-    ACAccountType *twitterAccountType;
-    NSURL *requestURL;
-    
-    if ( self.fullVersion )
-    {
+
+    if ( self.fullVersion ) {
         params = @{@"status": message};
-        
-        requestURL = [NSURL URLWithString: [self twitterApiURL]];
-        
-        accountStore = [[[ACAccountStore alloc] init] autorelease];
-        
-        twitterAccountType = [accountStore accountTypeWithAccountTypeIdentifier: ACAccountTypeIdentifierTwitter];
-        
-        [accountStore requestAccessToAccountsWithType: twitterAccountType
-                                              options: nil
-                                           completion: ^(BOOL granted, NSError *error) {
-                                    NSArray *twitterAccounts;
-                                    SLRequest *postRequest;
-                                    
-                                    if (granted) {
-                                        twitterAccounts = [accountStore accountsWithAccountType:twitterAccountType];
-                                        
-                                        postRequest = [SLRequest requestForServiceType: SLServiceTypeTwitter requestMethod:  SLRequestMethodPOST URL: requestURL parameters:params];
-                                        
-                                        if([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter] == YES) {
-                                            postRequest.account = [twitterAccounts lastObject];
-                                            
-                                            [postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-                                                [self processResponce: responseData urlResponse: urlResponse error: error];
-                                            }];
-                                        }
-                                        else {
-                                            Log(@"Twitter account not set");
-                                            [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNTwitterAccountNotSetTag", @"Не настроен не один аккаунт в twitter") code:0 userInfo:nil]];
-                                        }
-                                    }
-                                    else {
-                                        [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNTwitterAccountAccessFailTag", @"Ошибка доступа к аккаунтам twitter") code:0 userInfo:nil]];
-                                    }
-                                }];
+        [self postSLRequestWithParams: params options: nil typeIdentifier: ACAccountTypeIdentifierTwitter serviceType: SLServiceTypeTwitter];
     }
-    else
-    {
+    else {
         NSString *sUrl = [NSString stringWithFormat: @"%@%@&text=%@", [self sharingURL], self.link, [message stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
         Log(@"tweeting %@", sUrl);
         [[UIApplication sharedApplication] openURL: [NSURL URLWithString: sUrl]];
     }
 }
+
+- (NSString *) apiURL {
+    return @"https://api.twitter.com/1.1/statuses/update.json";
+}
+
 #endif
 
 - (void) processResponce: (NSData *) responseData urlResponse: (NSHTTPURLResponse *)urlResponse error: (NSError *) error {
@@ -198,29 +170,25 @@
                     successSend = YES;
                 }
                 else {
-                    [self tweetFailedWithError: [NSError errorWithDomain: errorMessage code:0 userInfo:nil]];
+                    [self slRequestFailedWithError: [NSError errorWithDomain: errorMessage code:0 userInfo:nil]];
                 }
             }
             else {
-                [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
+                [self slRequestFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
             }
         }
         else {
-            [self tweetFailedWithError: error];
+            [self slRequestFailedWithError: error];
         }
         
-        if(successSend == YES) {
-            [self tweetSent];
+        if(successSend) {
+            [self slRequestSent];
         }
     }
     @catch (NSException *exception) {
         Log(@"Exception when process twitter responce : %@", exception);
-        [self tweetFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
+        [self slRequestFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
     }
-}
-
-- (NSString *) twitterApiURL {
-    return @"https://api.twitter.com/1.1/statuses/update.json";
 }
 
 - (NSString *)sharingURL {
@@ -229,30 +197,16 @@
 
 #pragma mark - TwitterVC Delegate
 
-- (void)tweetSent {
-    Log(@"twit sent");
-    
+- (void) slRequestSent {
+    Log(@"%@ request sent", self.type);
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNTwitterTitle", @"Twitter") message: SN_T(@"kSNSuccessPublishTag", @"Запись успешно опубликована!")];
     });
-    
-    if([self.delegate respondsToSelector: @selector(postMessageSucceeded:)] == YES) {
+
+    if([self.delegate respondsToSelector: @selector(postMessageSucceeded:)]) {
         [self.delegate postMessageSucceeded: self];
     }
 }
-
-- (void)tweetFailedWithError:(NSError *)error {
-    Log(@"twit failed: %@", error);
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-         [SNFastMessage showFastMessageWithTitle: SN_T(@"kSNAlertViewErrorTitle", @"Ошибка") message:[error domain]];
-    });
-}
-
-- (void)tweetCancel {
-    [[NSNotificationCenter defaultCenter] postNotificationName:HIDE_MODAL_VIEW_CONTROLLER_NOTIFICATION object:nil];
-
-}
-
 
 @end
