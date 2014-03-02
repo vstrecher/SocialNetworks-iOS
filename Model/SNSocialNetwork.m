@@ -181,7 +181,7 @@ static BOOL _presentWithNotification = NO;
                                                }
                                            }
                                            else {
-                                               Log(@"SL account access error");
+                                               Log(@"SL account access error : %@", error);
                                                [self slRequestFailedWithError:
                                                        [NSError errorWithDomain:
                                                                [NSString stringWithFormat: SN_T(@"kSNSLAccountAccessFailTag", @"Ошибка доступа к аккаунтам %@"), self.type] code:0 userInfo:nil]];

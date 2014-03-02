@@ -105,9 +105,8 @@ messageDescription: (NSString *)fbDescription
 
 - (void) processResponse: (NSData *) responseData urlResponse: (NSHTTPURLResponse *)urlResponse error: (NSError *) error {
     NSError *jsonError;
-    NSDictionary *responseJson, *responseError;
-    NSArray *responseErrors;
-    NSString *errorMessage = nil;
+    NSDictionary *responseJson;
+    NSString *responseId = nil;
     BOOL successSend = NO;
 
     @try {
@@ -115,24 +114,19 @@ messageDescription: (NSString *)fbDescription
         if(error == nil) {
             responseJson = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&jsonError];
 
-            Log(@"Responce from [%@] api: [%@]", self.apiURL, responseJson);
-
-            /*
             if(responseJson != nil) {
-                responseErrors = [responseJson objectForKey: @"errors"];
-                responseError = responseErrors.lastObject;
-                errorMessage = [responseError objectForKey: @"message"];
+                responseId = [responseJson objectForKey: @"id"];
 
-                if(errorMessage == nil) {
+                if(responseId != nil && responseId.length > 0) {
                     successSend = YES;
                 }
                 else {
-                    [self slRequestFailedWithError: [NSError errorWithDomain: errorMessage code:0 userInfo:nil]];
+                    [self slRequestFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
                 }
             }
             else {
                 [self slRequestFailedWithError: [NSError errorWithDomain: SN_T(@"kSNUnknownErrorTag", @"Неизвестная ошибка") code:0 userInfo:nil]];
-            */
+            }
         }
         else {
             [self slRequestFailedWithError: error];
