@@ -148,7 +148,7 @@
 
 #endif
 
-- (void) processResponce: (NSData *) responseData urlResponse: (NSHTTPURLResponse *)urlResponse error: (NSError *) error {
+- (void) processResponse: (NSData *) responseData urlResponse: (NSHTTPURLResponse *)urlResponse error: (NSError *) error {
     NSError *jsonError;
     NSDictionary *responceJson, *responceError;
     NSArray *responceErrors;
